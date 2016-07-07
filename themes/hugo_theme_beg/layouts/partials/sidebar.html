@@ -1,0 +1,50 @@
+
+<aside class="site">
+<section class="even">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">found on</h2>
+    </div>
+    <div class="found-on-list">
+      <a href="mailto:vadimvpopa@gmail.com" rel="tooltip" title="vadimvpopa@gmail.com"><i class="fa fa-envelope-o"></i></a>
+      <a href="https://twitter.com/vadimvpopa" rel="tooltip" title="twitter"><i class="fa fa-twitter"></i></a>
+      <a href="https://github.com/vadimpopa/" rel="tooltip" title="github"><i class="fa fa-github"></i></a>
+      <a href="http://www.linkedin.com/in/vadimpopa" rel="tooltip" title="linkedin"><i class="fa fa-linkedin"></i></a>
+    </div>
+  </div>
+</section>
+
+
+  {{ range $key, $value := .Site.Taxonomies }}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">{{ $key | singularize }}</h2>
+    </div>
+    <div class="list-group">
+      {{ range first 10 $value.ByCount }}
+      <a href="{{ $.Site.BaseURL}}{{ $key }}/{{ .Name | urlize }}" class="list-group-item">{{ .Name }}</a>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent posts</h2>
+    </div>
+    <div class="list-group">
+      {{ range first 10 .Site.Pages }}
+      <a href="{{ .Permalink }}" class="list-group-item">{{ .Title }}</a>
+      {{ end }}
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent comments</h2>
+    </div>
+      <div id="dsq-recentcomments" class="dsq-widget"><script type="text/javascript" src="http://disqus.com/forums/vadimpopacom/recent_comments_widget.js?hide_avatars=1"></script></div>
+  </div>
+</aside>
+

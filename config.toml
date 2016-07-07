@@ -1,0 +1,15 @@
+baseurl = "http://vadimpopa.com/"
+languageCode = "en-us"
+title = "All the things about web and javascript"
+theme = "hugo_theme_beg"
+author = "Vadim Popa"
+copyright = "Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved."
+
+[Params]
+  Author = "Vadim Popa"
+  disqusShortname = "vadimpopacom"
+  GoogleAnalyticsUserID= "UA-36108032-2"
+  Twitter = "vadimvpopa"
+  Github = "vadimpopa"
+  Disqus = "vadimpopacom"
+  ShowRelatedPost = true
