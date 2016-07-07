@@ -1,0 +1,1078 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Javascript on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/javascript/</link>
+    <description>Recent content in Javascript on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Wed, 06 Jul 2016 17:50:16 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Sencha ViewModel Tips</title>
+      <link>http://vadimpopa.com/post/sencha-viewmodel-tips/</link>
+      <pubDate>Wed, 06 Jul 2016 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/sencha-viewmodel-tips/</guid>
+      <description>&lt;p&gt;Check out my post &lt;a href=&#34;http://moduscreate.com/sencha-viewmodel-tips/&#34; target=&#34;_blank&#34;&gt;Sencha ViewModel Tips&lt;/a&gt; on &lt;a href=&#34;http://moduscreate.com&#34; target=&#34;_blank&#34;&gt;ModusCreate&lt;/a&gt; blog for great tips. Also you can find the latest &lt;a href=&#34;https://gist.github.com/vadimpopa/fcebedfc2570e6fe197188257e235e01&#34; target=&#34;_blank&#34;&gt;Revision&lt;/a&gt; updated and anytime on my github account. Soon more to come with great ExtJS6 stuff.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Compile can boost your directives</title>
+      <link>http://vadimpopa.com/post/compile-can-boost-your-directives/</link>
+      <pubDate>Sun, 01 Feb 2015 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/compile-can-boost-your-directives/</guid>
+      <description>&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/rocket.png&#34; style=&#34;display: block;margin: 0 auto; width:150px;height:150px;&#34;&gt;
+Use whenever you can &lt;a href=&#34;https://github.com/angular/angular.js/wiki/Understanding-Directives&#34;&gt;compile&lt;/a&gt; to boost your Angular directives and get rid of whatchers. For instance we have a &lt;code&gt;directive&lt;/code&gt; which acts as a data row in a &lt;code&gt;ngRepeat&lt;/code&gt;, like a grid row. Only besides the trivial columns this row has some action buttons.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!--myDataRow.tpl.html--&amp;gt;
+&amp;lt;div class=&amp;quot;my-data-row&amp;quot; ng-class=&amp;quot;{ &#39;my-data-row-selected&#39;: row.isSelected }&amp;quot; layout=&amp;quot;row&amp;quot;&amp;gt;
+    &amp;lt;span class=&amp;quot;my-data-row-name&amp;quot;&amp;gt;
+      &amp;lt;a class=&amp;quot;my-data-row-id&amp;quot; href=&amp;quot;&amp;quot;&amp;gt;{{ row.id }}&amp;lt;/a&amp;gt;
+      &amp;lt;span&amp;gt;{{ row.name }}&amp;lt;/span&amp;gt;
+    &amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;my-data-row-actions&amp;quot; flex&amp;gt;
+      &amp;lt;i ng-show=&amp;quot;canCommentAction&amp;quot; class=&amp;quot;my-data-row-actions-comment icon&amp;quot; ng-click=&amp;quot;commentOnEntity($event)&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+      &amp;lt;i ng-show=&amp;quot;canDeleteAction&amp;quot; class=&amp;quot;my-data-row-actions-delete icon&amp;quot; ng-click=&amp;quot;deleteEntity($event)&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+      &amp;lt;i class=&amp;quot;icon&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+    &amp;lt;/span&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;function myDataRowDirective() {
+    return {
+        restrict: &#39;E&#39;,
+        replace: true,
+        templateUrl: &#39;directives/myDataRow/myDataRow.tpl.html&#39;,
+        scope: {
+            row: &#39;=&#39;,
+            onDelete: &#39;&amp;amp;?&#39;,
+            onComment: &#39;&amp;amp;?&#39;
+        },
+        link: myDataRowLink
+    };
+}
+
+function myDataRowLink(scope, element, attrs) {
+  //the ngShow flags are defined for the row actions
+    scope.canDeleteAction = attrs.onDelete;
+    scope.canCommentAction = attrs.onComment;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!--Use of myDataRow--&amp;gt;
+ &amp;lt;my-data-row
+      on-delete=&amp;quot;stories.deleteStory(story, $event)&amp;quot;
+      on-comment=&amp;quot;stories.commentOnStory(story, $event)&amp;quot;
+      ng-repeat=&amp;quot;story in stories.userStories | filter: stories.searchUserStories | filter: stories.filterUserStoriesObj | orderBy: &#39;index&#39; track by story.id&amp;quot;
+      row=&amp;quot;story&amp;quot;&amp;gt;
+&amp;lt;/my-data-row&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Everything is fine, the directive works ok. But once the view gets heavy and has a lot of rows to show the user encounters slow responsiveness. The reasons may be beacause of the digest(sometimes running form &lt;code&gt;rootScope&lt;/code&gt;) cycle which runs trough many watchers. In an AngularJS app you can see whatchers everywhere including in &lt;a href=&#34;https://github.com/angular/angular.js/blob/master/src/ng/directive/ngShowHide.js&#34;&gt;ngShows&lt;/a&gt;  used within above template. Having them in a directive within an &lt;code&gt;ngRepeat&lt;/code&gt; adds more overhead to responsivness.&lt;/p&gt;
+
+&lt;p&gt;Here comes &lt;code&gt;compile&lt;/code&gt; which gets rid of whatchers. Instead of checking whether to show or not the action buttons in the &lt;code&gt;link&lt;/code&gt; function, do it in &lt;code&gt;compile&lt;/code&gt;. This way the directive gets rid of 2 &lt;code&gt;ngShows&lt;/code&gt; and at the same time of 2 &lt;code&gt;whatchers&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;// myDataRowDirective optimized
+function myDataRowDirective() {
+    return {
+        restrict: &#39;E&#39;,
+        replace: true,
+        templateUrl: &#39;directives/myDataRow/myDataRow.tpl.html&#39;,
+        scope: {
+            row: &#39;=&#39;,
+            onDelete: &#39;&amp;amp;?&#39;,
+            onComment: &#39;&amp;amp;?&#39;
+        },
+        compile: myDataRowCompile
+    };
+}
+
+function myDataRowCompile(tElement, tAttrs) {
+    if (!tAttrs.onDelete) {
+        tElement.find(&#39;.my-data-row-actions-delete&#39;).remove();
+    }
+    if (!tAttrs.onComment) {
+        tElement.find(&#39;.my-data-row-actions-comment&#39;).remove();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the end would like to suggest you to read this stackoverflow &lt;a href=&#34;http://stackoverflow.com/questions/12164138/what-is-the-difference-between-compile-and-link-function-in-angularjs&#34;&gt;thread&lt;/a&gt; which references a few examples of when and how to use &lt;code&gt;compile&lt;/code&gt; instead of &lt;code&gt;link&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Happy 2015 coding !&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>First thoughts about AngularJS from an ExtJS developer perspective</title>
+      <link>http://vadimpopa.com/post/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/</link>
+      <pubDate>Fri, 22 Nov 2013 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/</guid>
+      <description>&lt;p&gt;I thought that is time for me to learn something else, something new from the Front-end world just to be on same wave with latest trends and to feed the brain with a different perspective. After all life is all about learning and in doing we learn.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/feelings_about_angularjs_over_time.png&#34; style=&#34;display: block;margin: 0 auto; width:400px;height:300px;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;I like everything what&amp;#8217;s connected with web apps and lately I&amp;#8217;ve been keeping my eyes on AngularJS. Seeing it&amp;#8217;s growing popularity and that AngularJS advocates a different approach of building web apps, got me intrigued and I&amp;#8217;ve started the learn process. After a week of diving in many resources I&amp;#8217;ve decided to put down some of my thoughts.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Learning curve&lt;/strong&gt;&lt;br /&gt;
+I can agree with this &lt;a href=&#34;http://www.bennadel.com/blog/2439-My-Experience-With-AngularJS-The-Super-heroic-JavaScript-MVW-Framework.htm&#34; title=&#34;http://www.bennadel.com/blog/2439-My-Experience-With-AngularJS-The-Super-heroic-JavaScript-MVW-Framework.htm&#34;&gt;guy&lt;/a&gt;. You get down and up while trying to understand how the core works and you think sometimes that some of the things are easier and faster to achieve with less effort in ExtJS. sometimes the opposite.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Documentation.&lt;/strong&gt;&lt;br /&gt;
+Being indulged by ExtJS&amp;#8217;s good documentation, what I&amp;#8217;ve found on AngularJS made my start not easy. For more resources google is your friend. My search brought to surface a few good posts which I think worths to check:
+&lt;!-- more --&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/14049480/what-are-the-nuances-of-scope-prototypal-prototypical-inheritance-in-angularjs&#34;&gt;http://stackoverflow.com/questions/14049480/what-are-the-nuances-of-scope-prototypal-prototypical-inheritance-in-angularjs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/15666048/angular-js-service-vs-provider-vs-factory&#34;&gt;http://stackoverflow.com/questions/15666048/angular-js-service-vs-provider-vs-factory&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.ng-newsletter.com/posts/&#34;&gt;http://www.ng-newsletter.com/posts/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://pluralsight.com/training/Courses/TableOfContents/angularjs-fundamentals&#34;&gt;http://pluralsight.com/training/Courses/TableOfContents/angularjs-fundamentals&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;First experiment and thoughts&lt;/strong&gt;&lt;br /&gt;
+Ended up with a &lt;a title=&#34;http://plnkr.co/edit/61rmik&#34; href=&#34;http://plnkr.co/edit/61rmik&#34; target=&#34;_blank&#34;&gt;simple directive&lt;/a&gt; analog to the &lt;a title=&#34;https://github.com/vadimpopa/Ux.field.Multiselect&#34; href=&#34;https://github.com/vadimpopa/Ux.field.Multiselect&#34; target=&#34;_blank&#34;&gt;multiselectfield&lt;/a&gt; Sencha Touch component I built a few months ago. The implementation wasn&amp;#8217;t smooth and intuitive. Had to make some debugging and reread some resource to understand how scopes work in AngularJS for directives, parent and child elements. Other important AngularJS specifics on my learn list, is to understand how the watchers work in directives and how to write the code to end up with less of them.&lt;/p&gt;
+
+&lt;p&gt;Angular seems a powerful, not big library. But building your first web components will take some time. Is not like you would extend an ExtJS &lt;code&gt;Panel&lt;/code&gt; with some child items or a &lt;code&gt;View&lt;/code&gt; with a configured &lt;code&gt;XTemplate&lt;/code&gt; and some methods.&lt;/p&gt;
+
+&lt;p&gt;Overall when building an app or component you could spent 40% of your time on writing html and 60% javascript, while on ExtJS around 85% is javascript. Also ExtJS has built in nice layouts and a platform for theming, while on AngularJS is needed a 3&amp;#8242;rd-party CSS/JS library or some personal efforts.&lt;/p&gt;
+
+&lt;p&gt;I like Angular&amp;#8217;s two way binding, though I&amp;#8217;m not sure yet when there are a lot of watches, from the performance perspective how the app will behave. Directives are very nice to make reusable components, but I&amp;#8217;ll need some time to get used to Angular&amp;#8217;s way of configuring components(directives) trough html attributes when in ExtJS  I did it trough javascript objects.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div ng-controller=&amp;quot;ExampleCtrl&amp;quot;&amp;gt;
+    &amp;lt;nvd3-cumulative-line-chart
+            data=&amp;quot;exampleData&amp;quot;
+            id=&amp;quot;exampleId&amp;quot;
+            width=&amp;quot;800&amp;quot;
+            height=&amp;quot;400&amp;quot;
+            showXAxis=&amp;quot;true&amp;quot;
+            showYAxis=&amp;quot;true&amp;quot;
+            tooltips=&amp;quot;true&amp;quot;
+            interactive=&amp;quot;true&amp;quot;
+            x=&amp;quot;xFunction()&amp;quot;
+            y=&amp;quot;yFunction()&amp;quot;
+            color=&amp;quot;colorFunction()&amp;quot;
+            isArea=&amp;quot;true&amp;quot;
+            margin=&amp;quot;{left:50,top:50,bottom:50,right:50}&amp;quot;
+            &amp;gt;
+        &amp;lt;svg&amp;gt;&amp;lt;/svg&amp;gt;
+    &amp;lt;/nvd3-cumulative-line-chart&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Next Step&lt;/strong&gt;&lt;br /&gt;
+Climb next peak on that learning curve, with some more patient along with some beers, going to reread some of the resources and build some more directives.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>How to add custom sprites in ExtJS charts</title>
+      <link>http://vadimpopa.com/post/how-to-add-custom-sprites-in-extjs-charts/</link>
+      <pubDate>Sat, 07 Sep 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/how-to-add-custom-sprites-in-extjs-charts/</guid>
+      <description>&lt;p&gt;Though ExtJS charts are very rich in features sometimes our clients want more. Very often they want some specific features which in the end leads to adding new custom sprites to the charts. And ExtJS is ready to help us with the needed tools to accomplish those features and make the client happy.&lt;/p&gt;
+
+&lt;p&gt;In this post I&amp;#8217;m going to add some light on how to add custom sprites in ExtJS charts based on a real world example. Let&amp;#8217;s say that the client would need sort of threshold line which would outline a few areas on the chart.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/charts_thresholds.png&#34; style=&#34;display: block;margin: 0 auto; width:380px;height:300px;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;First thought which comes is how this feature would be integrated in our chart component, in a easy way that is usual for ExtJS and its users. Right, first we would need some chart configs, something like these ones below, or even could be an array of them:&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;{
+    threshold: 36,
+    title: &#39;Goal&#39;
+ }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Luckily we can benefit of ExtJS&amp;#8217;s tools like plugins, mixins, extensions and drawing classes. Assuming that you know already the difference between a mixin and a plugin, I&amp;#8217;ll answer to the question which we brought earlier that for integration we would need a plugin.&lt;/p&gt;
+
+&lt;p&gt;Now we can wrap those configs in a plugin config, in a chart component:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.create(&#39;Ext.chart.Chart&#39;, {
+        plugins: [{
+            ptype: &#39;chartthresholds&#39;,
+            items: [{
+                  threshold: 36,
+                  title: &#39;Goal&#39;
+            },{
+                threshold: 66,
+                title: &#39;Huge&#39;
+            }]
+        }]
+    });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Having already the definition of the task, now we can define our plugin:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Thresholds&#39;, {
+    extend: &#39;Ext.AbstractPlugin&#39;,
+    alias: &amp;quot;plugin.chartthresholds&amp;quot;,
+    constructor: function(config) {
+      var me = this;
+
+      // The collections of threshold items
+      me.items = [];
+
+      if (config) {
+          Ext.apply(me, config);
+      }
+    },
+     /**
+     * The plugin initialization method which the owning Component calls at Component initialization time.
+     */
+    init : function(chart){}
+
+    /**
+     * The plugin cleanup method which the owning Component calls at Component destruction time.
+     */
+    destroy : function() {}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you see from task definition we can have more threshold items, so our plugin will have a second purpose, which is, to act as a collection of threshold items.&lt;/p&gt;
+
+&lt;p&gt;Now as we have the collection class prototyped we need the item, a ExtJS tool to use for to display on the chart a line and a text. Always look the answer in ExtJS source code in the respective classes. Since we are working with charts and drawing we can get the answer in a snap by looking for example how Legend is created, that we need to use Sprites to draw both the line and the text and a CompositeSprite to wrap them.&lt;/p&gt;
+
+&lt;p&gt;But why would we need a CompositeSprite ? as the docs say a composite Sprite handles a group of sprites with common methods to a sprite such as hide, show, setAttributes. These methods are applied to the set of sprites added to the group. I would add also to importance the destroy method.&lt;/p&gt;
+
+&lt;p&gt;Our threshold item gets the following definition:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.ThresholdItem&#39;, {
+        extend: &#39;Ext.draw.CompositeSprite&#39;,
+
+        visible: false,
+
+        constructor: function(config) {
+            var me = this;
+
+            if (config) {
+                Ext.apply(me, config);
+            }
+
+            me.callParent();
+
+            me.on(&#39;mousedown&#39;, me.onMouseDown, me);
+        },
+
+        /**
+         * @private Handler for threshold selecting/deselecting
+         */
+        onMouseDown: function() {
+        }
+    });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next will finish our prototyping with adding methods definitions to the plugin for both sprites, the line and text:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Thresholds&#39;, {
+    extend: &#39;Ext.AbstractPlugin&#39;,
+
+    .....................
+
+   /**
+    * @private Redraws all items, called after each chart redraw
+    */
+    redraw: function(){},
+
+    /**
+     * @private Draws threshold items
+     */
+     drawItems: function(){},
+
+    /**
+     * @private Creates label sprite and/or redraws it to the given position
+     */
+    drawLabel: function(item,x,y,z) {},
+
+    /**
+     * @private Creates line sprite and/or redraws it to the given position
+     */
+    drawLine: function(item,fromX, fromY, toX, toY, z) {
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once we are done with prototyping we can proceed to sprites drawing.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;drawLine: function(item,fromX, fromY, toX, toY, z) {
+            var line = item.get(&#39;line&#39;),
+                path = &#39;M&#39; + fromX + &#39;,&#39; + fromY + &#39;L&#39; + toX + &#39;,&#39; + toY;
+
+            if(line){
+                line.setAttributes({ path : path},true);
+            }else{
+                line = item.add(&#39;line&#39;, item.surface.add({
+                    type: &#39;path&#39;,
+                    path: path,
+                    zIndex: z,
+                    &amp;quot;stroke-width&amp;quot;: this.lineWidth,
+                    opacity: 0,
+                    fill: &#39;#a0142c&#39;,
+                    stroke: this.lineStroke,
+                    style: {
+                        cursor: &#39;pointer&#39;
+                    }
+                }));
+            }
+
+            return line;
+        },
+        drawLabel: function(item,x,y,z) {
+            var label = item.get(&#39;label&#39;);
+
+            if(label){
+                label.setAttributes({ x:x, y:y },true);
+            }else{
+                label = item.add(&#39;label&#39;, item.surface.add({
+                    type: &#39;text&#39;,
+                    x: x,
+                    y: y,
+                    zIndex: z,
+                    fill: this.labelColor,
+                    font: this.labelFont,
+                    text: item.title,
+                    style: {
+                        cursor: &#39;pointer&#39;
+                    }
+                }));
+            }
+            return label;
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Drawing methods are ready, it&amp;#8217;s time to get their coordinates. The coordinates are relative to design specifications, what&amp;#8217;s important is to get the idea on how to get them and how to use. Once you understand this you can play with positioning according to your designs. Below method it&amp;#8217;s what you would need to get started with the game.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;drawItems: function(){
+            var me = this,
+                chart = me.cmp,
+                axes = chart.axes,
+                leftAxis = axes.get(&#39;left&#39;),
+                stepHeight = leftAxis.length / (leftAxis.to - leftAxis.from),
+                x2 = leftAxis.width + leftAxis.x,
+                zIndex = (this.zIndex || 0) + 2,
+                items = me.items,
+                li = items.length,
+                i = 0,
+                y1,item;
+
+            for (; i &amp;amp;lt; li; i++) {
+                item = items[i];
+
+                y1 = leftAxis.y - stepHeight * item.threshold;
+
+                me.drawLabel(item,5,y1, zIndex + 1);
+                me.drawLine(item,5,y1-1,x2,y1-1,zIndex);
+
+                if(!item.visible){
+                    item.setAttributes({
+                        hidden: false
+                    }, true);
+
+                    item.visible = true;
+                }
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It&amp;#8217;s time to instantiate the items:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;createItems: function() {
+            var me = this,
+                surface = me.cmp.surface,
+                items = me.items,
+                li = items.length,
+                i = 0,
+                item;
+
+            for (; i &amp;amp;lt; li; i++) {
+                item[i] = Ext.create(&#39;Ux.chart.ThresholdItem&#39;,Ext.apply({
+                    thresholds: me,
+                    surface: surface
+                },items[i]));
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then finally redraw and init the plugin:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;init: function (chart) {
+            this.labelColor = chart.textColor;
+
+            if(this.visible)
+                Ext.Function.interceptAfter(chart,&amp;quot;redraw&amp;quot;,this.redraw,this);
+        },
+        redraw: function() {
+            var me = this;
+
+            if (!me.created) {
+                me.created = true;
+                me.createItems();
+            }
+
+            if(me.visible)
+                me.drawItems();
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice that the visible config, you could add a few lines of code to add some laziness and to make the threshold item visible later but not at first chart redraw.&lt;/p&gt;
+
+&lt;p&gt;And yes, we end with cleaning:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;destroy: function(){
+            var items = this.items,
+                li = items.length,
+                i = 0;
+            
+            for (; i &amp;amp;lt; li; i++) {
+                items[i].destroy();
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That&amp;#8217;s it, have a enjoyable charts customizing process.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NVD3 and Raphael as alternative charting libs for Sencha Touch</title>
+      <link>http://vadimpopa.com/post/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</link>
+      <pubDate>Sat, 22 Jun 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</guid>
+      <description>&lt;p&gt;Below my short journey in taking a look to NVD3 and Raphael as alternative charting libraries for &lt;a title=&#34;Sencha Touch 2&#34; href=&#34;http://www.sencha.com/products/touch&#34; target=&#34;_blank&#34;&gt;Sencha Touch&lt;/a&gt;(ST). ST has a powerful and nice charting library which is included as a part of Touch (available as GPLv3 or as a part of Sencha Complete and Complete: Team). Yet I&amp;#8217;ve wanted to try other charts libs with a more flexible license which will allow me to integrate them easily in a ST app and develop a simple line chart ST component.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/raphael_chart-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:280px;height:200px;&#34;&gt;
+First on the list was &lt;a href=&#34;http://raphaeljs.com&#34; target=&#34;_blank&#34;&gt;Raphael&lt;/a&gt; which is part of Sencha Labs. Integration went pretty easy, and with a few lines of code, a simple basic line chart component in ST was ready. Many thanks to the author of this &lt;a href=&#34;http://www.exratione.com/2011/10/a-few-tips-for-graphael-line-charts/&#34;&gt;blog&lt;/a&gt; from which I took the Raphael example.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;/*
+ * xtype: &#39;rchartline&#39;,
+ * chartData: {
+ *   x: [1, 2, 3, 4, 5, 6, 7],
+ *   y: [12, 32, 23, 15, 17, 27, 22]
+ * }
+ */
+
+Ext.define(&#39;Ux.chart.RLine&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;rchartline&#39;,
+
+    config: {
+        chartCfg:  {
+           nostroke: false,   // lines between points are drawn
+           axis: &amp;quot;0 0 1 1&amp;quot;,   // draw axes on the left and bottom
+           symbol: &amp;quot;circle&amp;quot;,    // use a filled circle as the point symbol
+           smooth: true,      // curve the lines to smooth turns on the chart
+           dash: &amp;quot;-&amp;quot;,         // draw the lines dashed
+           colors: [
+             &amp;quot;#995555&amp;quot;,       // the first line is red
+             &amp;quot;#555599&amp;quot;        // the second line is blue
+           ]
+         },
+         chartData: {
+          x: [],
+          y: []
+         }
+    },
+    initialize: function(){
+      this.canvas = Raphael(this.innerElement.createChild({tag: &amp;quot;div&amp;quot;, cls: &#39;raphael-chartWrapper&#39;}).dom);
+
+      this.on(&#39;painted&#39;,function(){
+          var data = this.getChartData();
+
+          this.canvas.linechart(10,10,390,180,data.x,data.y,this.getChartCfg());
+      });
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/nvd3-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:200px;height:160px;&#34;&gt;
+Next one was &lt;a href=&#34;http://nvd3.org&#34; target=&#34;_blank&#34;&gt;NVD3&lt;/a&gt;, a very nice simple library based on the powerful &lt;a href=&#34;http://d3js.org&#34; target=&#34;_blank&#34;&gt;D3&lt;/a&gt;. While NVD3 is not documented, D3 seems very well documented, and since the former is sort of facade to the second, it&amp;#8217;s good to check for examples and documentation on both sites. As you can see form first example you can suppose already that making an ST chart component based on NVD3 is also easy, which is true. The difference is that following example has the implementation of real time update while on Raphael it doesn&amp;#8217;t. That&amp;#8217;s because I was constrained by project time and haven&amp;#8217;t had it enough for looking the best way of how to do it (one of the ideas which worked was a call of canvas.clear() and draw the chart from scratch with linechart method).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Line&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;chartline&#39;,
+
+    initialize: function(){
+
+      nv.addGraph(Ext.bind(function(){
+          var chart = nv.models.lineChart();
+
+          chart.xAxis.tickFormat(function (d) {
+            return d3.time.format(&#39;%x&#39;)(new Date(d))
+          });
+
+          chart.yAxis.tickFormat(d3.format(&#39;,.1%&#39;));
+
+          d3.select(this.innerElement.dom).append(&#39;svg&#39;);
+
+          nv.utils.windowResize(chart.update);
+
+          this.chart = chart;
+
+          return chart;
+      },this));
+
+      this.on(&#39;painted&#39;,function(){
+          this.redraw();
+
+          setInterval(Ext.bind(function () {
+            var long = this.getData()[0].values,
+                next = new Date(long[long.length - 1].x);
+
+            next.setDate(next.getDate() + 1);
+            long.shift();
+            long.push({x:next.getTime(), y:Math.random() * 100});
+
+            this.redraw();
+
+          },this), 1500);
+      },this)
+
+    },
+
+    redraw: function() {
+      d3.select(this.innerElement.down(&#39;svg&#39;).dom)
+            .datum(this.getData())
+            .transition().duration(500)
+            .call(this.chart);
+    },
+    generateData: function() {
+        var arr = [],
+            theDate = new Date(2012, 01, 01, 0, 0, 0, 0);
+
+        for (var x = 0; x &amp;amp;lt; 30; x++) {
+            arr.push({x: theDate.getTime(), y: Math.random() * 100});
+            theDate.setDate(theDate.getDate() + 1);
+        }
+        return arr;
+    },
+    getData: function() {
+      return [{
+        &amp;quot;key&amp;quot;: &amp;quot;Long&amp;quot;,
+        &amp;quot;values&amp;quot;: this.generateData()
+      }];
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At first impression D3 seems very powerful in charts drawing and richer than Raphael. Since it gave good results I stopped looking for other libraries and started work on an extension based on NVD3 and above example. For full examples source code and a running demo check my &lt;a href=&#34;https://github.com/vadimpopa/Ux.chart.Line&#34; target=&#34;_blank&#34;&gt;github repo&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;My journey stops here and I wish you happy charting.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Inside Aymap, an ExtJS4 web application, part 2</title>
+      <link>http://vadimpopa.com/post/aymap-part-2/</link>
+      <pubDate>Tue, 02 Apr 2013 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/aymap-part-2/</guid>
+      <description>&lt;p&gt;In this post will continue Aymap views exploration and share with you some extension tips and tricks that I&amp;#8217;ve used and I think might be useful for you too in writing your ExtJS4 web application.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;AyToolbox&lt;/em&gt;&lt;/strong&gt;&lt;br /&gt;
+If to look in previous part at &lt;code&gt;AyToolbox&lt;/code&gt; you can see that contains 5 items of &lt;code&gt;toolboxpanel&lt;/code&gt; &lt;code&gt;xtype&lt;/code&gt;. This widget does the job for 5 views and has the following define:&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.view.toolbox.Panel&#39;,{
+    extend : &#39;Ext.grid.Panel&#39;,
+
+   // More configs
+    initComponent: function(){
+        var me = this,
+            store;
+
+        Ext.apply(me,{
+            // More configs
+            columns: [{
+                width: 100,
+                sortable: true,
+                dataIndex: &#39;name&#39;
+            }],
+                listeners: {
+                    afterrender: function(view){
+                        view.getPlugin(&#39;gridviewdragdrop&#39;).dragZone.getDragText = function() {
+                            return this.dragData.records[0].get(&#39;name&#39;)
+                        }
+
+                        Ext.create(&#39;Ext.tip.ToolTip&#39;, {
+                            target: view.el,
+                            delegate: view.itemSelector,
+                            trackMouse: true,
+                            renderTo: Ext.getBody(),
+                            listeners: {
+                                beforeshow: function(tip) {
+                                    tip.update(this.getRecord(tip.triggerElement).get(&#39;name&#39;));
+                                },
+                                scope: view
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        me.callParent(arguments);
+        store = me.getStore();
+        store.guaranteeRange(0, store.pageSize-1);
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note the best approach on how to add tooltips to grid columns trough delegation, which is much performant than using renderers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;renderers:  function (value, metadata){
+        metadata.tdAttr = &#39;data-qtip=&amp;quot; &#39; + value + &#39;&amp;quot;&#39;;
+        return value;
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;While working on this class I&amp;#8217;ve learned that if to use ExtJS Models at maximum, you can simplify views configurations. If you have a few similar views, like I had in &lt;em&gt;AyToolbox&lt;/em&gt;, but your columns &lt;em&gt;dataIndexes&lt;/em&gt; are not the same tough have the same goal: to show a description, &lt;strong&gt;then use Model&amp;#8217;s mapping feature&lt;/strong&gt;. Below you can see how mapping is done for a few models which are bound to the stores that provide records to those 5 grids within &lt;code&gt;AyToolbox&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.model.Output&#39;, {
+    extend: &#39;Ext.data.Model&#39;,
+    fields: [
+        {name: &#39;name&#39;, mapping: &#39;output_name&#39;,  type: &#39;string&#39;}
+
+    ]
+});
+
+Ext.define(&#39;AyMap.model.Camera&#39;, {
+    extend: &#39;Ext.data.Model&#39;,
+    fields: [
+    	{name: &#39;name&#39;, mapping: &#39;resource_name&#39;,  type: &#39;string&#39;}
+    ]
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Aymap objects&lt;/em&gt;&lt;/strong&gt;&lt;br /&gt;
+{% img right ../images/posts/map.png 260 180 %}&lt;/p&gt;
+
+&lt;p&gt;If you look at an Aylook map(see left image), you can see some white or transparent fancy boxes. Those are aylook objects, each one having a few common styling properties like: colors, transparency, icons, borders; and a few Aylook specific properties: data related to the surveillance system and its devices. &lt;strong&gt;Under those objects actually stands the powerful ExtJS &lt;code&gt;Ext.Component&lt;/code&gt; and the magic of &lt;code&gt;Ext.XTemplate&lt;/code&gt;&lt;/strong&gt;. Using these nice classes, was easy enough just implement basics object layout/template, define an AbstractObject which covers objects common properties and functionalities and then extended it to get all types of objects Aylook would have &amp;#8211; mission accomplished.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.ux.AbstractObject&#39;, {
+    extend: &#39;Ext.Component&#39;,
+    //More configs
+    createObjTemplate: function(){
+      return  new Ext.XTemplate(
+        //Objects template
+      );
+    }
+});
+
+Ext.define(&#39;AyMap.ux.object.Camera&#39;, {
+    extend: &#39;AyMap.ux.AbstractObject&#39;,
+    //More specific configs
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another trick I&amp;#8217;ve used here is a factory class with a method which actually simplifies objects creation and decouples objects related code from UI code.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.util.ObjectFactory&#39;, {
+    requires: [
+        &#39;AyMap.ux.object.Camera&#39;,
+        &#39;AyMap.ux.object.Zone&#39;
+         //More requires
+    ],
+
+    singleton: true,
+
+    create: function (type, config, extraData) {
+        var object;
+        switch (type) {
+            case &#39;camera&#39;: {
+               // Process configs here, make some changes...then create the object
+               object = Ext.create(&#39;AyMap.ux.object.Camera&#39;, config);
+            }
+            //More objects
+        return object;
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Properties windows&lt;/em&gt;&lt;/strong&gt;&lt;br /&gt;
+One of the main functionality of the Aymap is to change those objects properties according to user&amp;#8217;s preferences. This is done by a few properties windows which also have some common functionality. When building ExtJS applications you often might have common functionalities, which means that you have to use inheritance &amp;#8211; one of the base core feature provided by ExtJS.The same principle was used here. As you can see in images, all windows have in common the colours fieldset and the positions fields, which means that their code can be wrapped in methods that belong to the parent class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.view.Properties&#39;, {
+    extend: &#39;Ext.window.Window&#39;
+
+    //Add window configs, example:
+    modal: true,
+    resizable: false,
+    layout: &#39;fit&#39;,
+    width: 300,
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.apply(me, {
+            title : &#39;Objects properties&#39;
+            // Add common configs
+        });
+        me.callParent();
+
+        //Add common events, for all windows
+        me.on(&#39;beforeclose&#39;, me.onBeforeClose,this);
+        me.down(&#39;form&#39;).on(&#39;dirtychange&#39;,me.onFormDirtyChange);
+    },
+    getColoursFildsetCfg: function(){
+        return {
+            xtype: &#39;fieldset&#39;
+            // more configs
+        }
+    },
+    getPositionsFieldsCfg: function(){
+        return {
+            xtype: &#39;container&#39;,
+            layout: &#39;column&#39;,
+            defaultType: &#39;numberfield&#39;,
+            defaults: {
+                labelWidth: 15,
+                minValue: 0,
+                columnWidth: 0.50
+            },
+            items: [{
+                fieldLabel: &#39;x&#39;,
+                name: &#39;x&#39;
+            },
+            {
+                fieldLabel: &#39;y&#39;,
+                name: &#39;y&#39;
+            }]
+        };
+    },
+    getFormCfg: function(cfg){
+        return Ext.apply(cfg,{
+            xtype: &#39;form&#39;,
+            frame: false,
+            trackResetOnLoad: true,
+            bodyPadding: 2,
+            buttons: []
+        });
+    }
+    // Add other methods and event handlers that are in common for all windows
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then, in the final class, you can customise form&amp;#8217;s items and add other specific code and configs:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;AyMap.view.properties.Camera&#39;, {
+    extend: &#39;AyMap.view.Properties&#39;,
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.apply(me, {
+            //Add other specific configs
+            items: [me.getFormCfg({
+                items: [
+                    me.getImgOnFieldCfg(),
+                    me.getPositionsFieldsCfg(),
+                    me.getCheckboxesCfg(),
+                    me.getColorFieldsCfg()
+                ]
+            })]
+        });
+
+        me.callParent();
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;{% img ../images/posts/camera.png 260 180 %}
+{% img ../images/posts/link.png 260 180 %}
+{% img ../images/posts/panel.png 260 180 %}&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;br /&gt;
+All tips I&amp;#8217;ve shown you and all other you might come up with can make your code smaller and cleaner. Also by applying them we touched some of the applications quality attributes: performance, flexibility and maintainability. Personally, while writing these posts I&amp;#8217;ve learned a important rule that there&amp;#8217;s always place for optimisations. So, think at least twice to the code, before writing and after, if this is the best solution you come up with.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Inside Aymap, an ExtJS4 web application, part 1</title>
+      <link>http://vadimpopa.com/post/aymap-part1/</link>
+      <pubDate>Sat, 16 Feb 2013 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/aymap-part1/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Overview&lt;/strong&gt;&lt;br /&gt;
+Having more than two years of experience in developing web applications based on Sencha Products, I thought I would start this blog with the first article about an ExtJS4 based application. As on the internet you can find a lot of simple applications and thousands of examples and solutions on how to do ordinary things or how to achieve a behavior, articles about real life applications are a few.&lt;/p&gt;
+
+&lt;p&gt;So these posts will cover how to build a real life application, from views to application structure and architecture, ending with application’s specifics. The app itself is called Aymap and takes care of drawing and customizing surveillance maps for a surveillance system called Aylook, which you can find more about on &lt;a title=&#34;www.aylook.com&#34; href=&#34;http://aylook.com&#34; target=&#34;_blank&#34;&gt;www.aylook.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This articles require some ExtJS knowledge in order to understand the code, as I won&amp;#8217;t add explanations to it except to some parts which may need. So to understand them is necessary to know: ExtJS class system, ExtJS widgets, how to extend a component and the basics of an ExtJS app, thus almost everything what you find in &lt;a title=&#34;Sencha&#34; href=&#34;http://sencha.com&#34; target=&#34;_blank&#34;&gt;Sencha&lt;/a&gt;&amp;#8216;s guide from the ExtJS4 documentation link.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Intro&lt;/strong&gt;&lt;br /&gt;
+When designing an application besides the functional requirements should be considered the quality attributes requirements too as they affect the run-time behavior, system design and the user experience. Performance, flexibility, maintainability, usability and conceptual integrity were the main attributes, for Aymap. ExtJS4 covers all of them in some level, which is one of the reasons why we chose it, but for a full cover, from developer side is needed a good JavaScript knowledge, best ExtJS practices and a solid application architecture.&lt;/p&gt;
+
+&lt;p&gt;As is written in sencha guides splitting up the application’s UI into views is the first step of building an app, well of course except the cases when there are some challenging UI parts which you might first want to try to find their solutions, to be sure that the project is feasible, is just as I do usually. The splitting operation should result with a balance between the views, not too granular but at the same time no too generic.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The Viewport&lt;/strong&gt;&lt;br /&gt;
+For Aymap I’ve come up with a simple Viewport as you can see in the picture and code:&lt;br /&gt;
+{% img center ../images/posts/aymap_viewport.png 580 400 %}&lt;/p&gt;
+
+&lt;p&gt;``` javascript app/view/Viewport.js
+Ext.define(&amp;lsquo;AyMap.view.Viewport&amp;rsquo;,{&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/* Begin Definitions */
+
+extend : &#39;Ext.container.Viewport&#39;,
+
+alias: &#39;widget.ayviewport&#39;,
+
+requires: [
+    &#39;Ext.layout.container.Border&#39;,
+    &#39;Ext.ux.StatusBar&#39;
+],
+
+/* End Definitions */
+
+layout: &#39;border&#39;,
+
+/**
+ * @property {Boolean} isFullscreen
+ * Read-only property indicating whether the viewport is in fullscreen mode or not
+ */
+
+isFullscreen: false,
+
+initComponent: function(){
+
+    Ext.apply(this,{
+        items: [{
+                xtype: &#39;aymenu&#39;,
+                itemId: &#39;menu&#39;,
+                region: &#39;north&#39;
+            },{
+                xtype: &#39;aytoolbox&#39;,
+                itemId: &#39;toolbox&#39;,
+                region : &#39;west&#39;
+            },{
+                xtype: &#39;statusbar&#39;,
+                itemId: &#39;statusbar&#39;,
+                region: &#39;south&#39;,
+                height:26,
+                defaultText: localizer.get(&#39;statusBarDefaultText&#39;),
+                statusAlign: &#39;right&#39;,
+                items: [{
+                    xtype: &#39;component&#39;,
+                    itemId: &#39;cmpLeftStatus&#39;,
+                    cls: &#39;ay-left-status&#39;,
+                    tpl: &#39;&amp;amp;lt;span&amp;amp;gt;{text}&amp;amp;lt;/span&amp;amp;gt;&#39;
+                }]
+            },{
+                xtype:&#39;mapcontainer&#39;,
+                region: &#39;center&#39;
+            }]
+    });
+    this.callParent(arguments);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;});&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+Aymap viewport is consisted from:
+
+*   AyMenu `Ext.toolbar.Toolbar` - menu which covers all Aymap operations on aylook maps
+*   AyToolbox `Ext.panel.Panel` &amp;amp;#8211; a container of grids which delivers to user a bunch of aylook objects which are present in that specific aylook system. Objects like: cameras, alarms, diagnostics, inputs, outputs and system buttons and so on.
+*   MapContainer `Ext.container.Container` &amp;amp;#8211; as the name says it&amp;amp;#8217;s a container for the current loaded aylook map.
+*   StatusBar `Ext.ux.StatusBar` &amp;amp;#8211; it&amp;amp;#8217;s the bottom bar which shows mouse coordinates on map and some status messages.
+
+``` javascript app/view/AyMenu.js
+
+Ext.define(&#39;AyMap.view.AyMenu&#39;, {
+
+    /* Begin Definitions */
+    extend: &#39;Ext.toolbar.Toolbar&#39;,
+    alias: &#39;widget.aymenu&#39;,
+
+    requires: [
+        &#39;Ext.container.ButtonGroup&#39;,
+        &#39;Ext.form.field.ComboBox&#39;
+    ],
+    /* End Definitions */
+
+    collapsible : true,
+    height : 69,
+    ui : &#39;aylook&#39;,
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.apply(me, {
+            items: [
+                me.getMapsMenuCfg(),
+                me.getClipboardMenuCfg(),
+                me.getEditMenuCfg(),
+                me.getInsertMenuCfg(),
+                me.getToolsMenuCfg(),
+                me.getSearchFieldCfg()
+            ]
+        });
+        me.callParent(arguments);
+    },
+
+    /**
+     * Returns config object for Ext.container.ButtonGroup of the Maps menu
+     * @private
+     */
+    getMapsMenuCfg: function(){
+        return {
+            xtype: &#39;buttongroup&#39;,
+            title: localizer.get(&#39;titleMap&#39;), //&#39;Map&#39;,
+            itemId: &#39;btnGpMaps&#39;,
+            columns: 3,
+            defaults: {
+                scale: &#39;small&#39;,
+                ui: &#39;aylook&#39;
+            },
+            defaultType: &#39;button&#39;,
+            items: [{
+                text: localizer.get(&#39;txtLoad&#39;), //&#39;Load&#39;
+                iconCls: &#39;ay_load_icon&#39;,
+                itemId: &#39;mMapsLoad&#39;,
+                menuHandler: &#39;onMapLoadClick&#39;,
+                scale: &#39;large&#39;,
+                rowspan: 3,
+                disabled: true
+            },
+                {
+                    text: localizer.get(&#39;txtNew&#39;), //&#39;New&#39;,
+                    iconCls: &#39;ay_new_icon&#39;,
+                    itemId: &#39;mMapsNew&#39;,
+                    menuHandler: &#39;onMapNewClick&#39;
+                },{
+                    text: localizer.get(&#39;txtProperties&#39;), //&#39;Properties&#39;,
+                    iconCls: &#39;ay_prop32_icon&#39;,
+                    itemId: &#39;mMapsProperties&#39;,
+                    menuHandler: &#39;onMapPropertiesClick&#39;,
+                    disabled: true,
+                    rowspan: 3,
+                    scale: &#39;large&#39;
+                },{
+                    text: localizer.get(&#39;txtDelete&#39;), //&#39;Delete&#39;,
+                    iconCls: &#39;ay_delete16_icon&#39;,
+                    menuHandler: &#39;onMapDeleteClick&#39;,
+                    itemId: &#39;mMapsDelete&#39;,
+                    disabled: true
+                }
+            ]
+        };
+    },
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you notice in the &lt;code&gt;getMapsMenuCfg&lt;/code&gt; more exactly in buttons configurations, there is a custom property called &lt;code&gt;menuHandler&lt;/code&gt;, it&amp;#8217;s a config which keeps the name of the method to be called and is used usually to simplify and minimise the code. As you can see the menu is very big and has a lot of buttons and to use such approach was very in handy. In controller there is a global listener to buttons clicks of the &lt;code&gt;AyMenu&lt;/code&gt; which just calls the method stored in &lt;code&gt;menuHandler&lt;/code&gt; of each button:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;// in controller
+ me.control({
+  &#39;aymenu button&#39;:{
+      click: function(button){
+        this[button.menuHandler].call(this,button);
+      }
+   }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;``` javascript app/view/AyToolbox.js&lt;/p&gt;
+
+&lt;p&gt;Ext.define(&amp;lsquo;AyMap.view.AyToolbox&amp;rsquo;,{&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/* Begin Definitions */
+
+extend: &#39;Ext.panel.Panel&#39;,
+alias: &#39;widget.aytoolbox&#39;,
+
+requires: [
+    &#39;Ext.layout.container.Accordion&#39;,
+    &#39;AyMap.view.toolbox.Panel&#39;
+],
+
+/* End Definitions */
+
+collapsible : true,
+layout :&#39;accordion&#39;,
+width : 118,
+collapseMode : &#39;mini&#39;,
+split : true,
+ui : &#39;aylook&#39;,
+title : localizer.get(&#39;titleTolbox&#39;),
+
+initComponent: function(){
+
+    Ext.apply(this,{
+        defaultType : &#39;toolboxpanel&#39;,
+        items:[{
+            title: localizer.get(&#39;titleCameras&#39;),
+            itemId: &#39;gridcamera&#39;,
+            store: &#39;Cameras&#39;
+        },{
+            title: localizer.get(&#39;titleInputs&#39;),
+            itemId: &#39;gridinput&#39;,
+            store: &#39;Inputs&#39;
+        },{
+            title: localizer.get(&#39;titleOutputs&#39;),
+            itemId: &#39;gridoutput&#39;,
+            store:  &#39;Outputs&#39;
+        },{
+            title: localizer.get(&#39;titleVariables&#39;),
+            itemId: &#39;gridvariable&#39;,
+            store: &#39;Variables&#39;
+        },{
+            title: localizer.get(&#39;titleAlarms&#39;),
+            itemId: &#39;gridburglar_alarms&#39;,
+            store: &#39;Alarms&#39;
+        }]
+    });
+
+    this.callParent(arguments);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;});&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+``` javascript app/view/MapContainer.js
+
+Ext.define(&#39;AyMap.view.MapContainer&#39;,{
+
+    /* Begin Definitions */
+
+	extend: &#39;Ext.container.Container&#39;,
+	alias: &#39;widget.mapcontainer&#39;,
+
+    requires: [
+        &#39;AyMap.ux.MapSurface&#39;,
+        &#39;Ext.ux.layout.Center&#39;
+    ],
+
+    /* End Definitions */
+
+	autoScroll: true,
+    layout: &#39;ux.center&#39;,
+    cls: &#39;ay-mapcontainer&#39;,
+
+    getContextMenu: function(){
+        if (!this.ctxMenu) {
+            this.ctxMenu = Ext.create(&#39;AyMap.view.ContextMenu&#39;, {
+                id: &#39;ctxMenu&#39;
+            });
+        }
+        return this.ctxMenu;
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So, that&amp;#8217;s it for the Viewport.&lt;br /&gt;
+&lt;strong&gt;Conclusions&lt;/strong&gt;&lt;br /&gt;
+In this part I have shown how to split application&amp;#8217;s UI in views and how to extend ExtJS components wisely. In the next part I will describe the rest of applications views and add some details about MapSurface component &amp;#8211; application&amp;#8217;s heart.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.16" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Open+Sans|Marcellus+SC'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/solarized_dark.min.css">
+    <link rel="stylesheet" href="http://vadimpopa.com/css/styles.css">
+    <link rel="stylesheet" href="http://vadimpopa.com/css/custom.css">
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://vadimpopa.com//index.xml">
+
+    
+    <title>Inside Aymap, an ExtJS4 web application, part 2 - All the things about web and javascript</title>
+    <meta property='og:title' content="Inside Aymap, an ExtJS4 web application, part 2 - All the things about web and javascript">
+    <meta property="og:type" content="article">
+    
+
+    <meta property="og:url" content="http://vadimpopa.com/post/aymap-part-2/">
+    
+    
+
+  </head>
+
+  <body>
+
+    <header class="site">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://vadimpopa.com/">All the things about web and javascript</a>
+          </div>
+
+          <div id="navbar" class="collapse navbar-collapse">
+            
+          </div>
+
+        </div>
+      </nav>
+    </header>
+
+    <div class="site">
+      <div class="container">
+
+
+
+<div class="single">
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <article class="single" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+        <meta itemprop="mainEntityOfPage"  itemType="https://schema.org/WebPage" content="http://vadimpopa.com/"/>
+        <meta itemprop="dateModified" content="2013-04-02T22:59:32&#43;03:00">
+        <meta itemprop="headline" content="Inside Aymap, an ExtJS4 web application, part 2">
+        <meta itemprop="description" content="In this post will continue Aymap views exploration and share with you some extension tips and tricks that I&#8217;ve used and I think might be useful for you too in writing your ExtJS4 web application. AyToolbox If to look in previous part at AyToolbox you can see that contains 5 items of toolboxpanel xtype. This widget does the job for 5 views and has the following define: Ext.define(&#39;AyMap.view.toolbox.Panel&#39;,{ extend : &#39;Ext.grid.Panel&#39;, // More configs initComponent: function(){ var me = this, store; Ext.apply(me,{ // More configs columns: [{ width: 100, sortable: true, dataIndex: &#39;name&#39; }], listeners: { afterrender: function(view){ view.getPlugin(&#39;gridviewdragdrop&#39;).dragZone.getDragText = function() { return this.dragData.records[0].get(&#39;name&#39;) } Ext.create(&#39;Ext.tip.ToolTip&#39;, { target: view.el, delegate: view.itemSelector, trackMouse: true, renderTo: Ext.getBody(), listeners: { beforeshow: function(tip) { tip.update(this.getRecord(tip.triggerElement).get(&#39;name&#39;)); }, scope: view } }); } } } }); me.callParent(arguments); store = me.getStore(); store.guaranteeRange(0, store.pageSize-1); } }); Note the best approach on how to add tooltips to grid columns trough delegation, which is much performant than using renderers: renderers: function (value, metadata){ metadata.tdAttr = &#39;data-qtip=&quot; &#39; &#43; value &#43; &#39;&quot;&#39;; return value; } While working on this class I&#8217;ve learned that if to use ExtJS Models at maximum, you can simplify views configurations.">
+        <meta itemprop="url" content="http://vadimpopa.com/post/aymap-part-2/">
+        <div itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+          <meta itemprop="url" content="http://vadimpopa.com/images/default.jpg" />
+          <meta itemprop="width" content="800">
+          <meta itemprop="height" content="800">
+        </div>
+        <div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+          <div itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+            <meta itemprop="url" content="http://vadimpopa.com/images/logo.jpg">
+            <meta itemprop="width" content="100">
+            <meta itemprop="height" content="100">
+          </div>
+          <meta itemprop="name" content="All the things about web and javascript">
+        </div>
+        <div itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <meta itemprop="name" content="Vadim Popa">
+        </div>
+
+        <header class="article-header">
+          <time itemprop="datePublished" pubdate="pubdate" datetime="2013-04-02T22:59:32&#43;03:00">Tue, Apr 2, 2013</time>
+          <h1 class="article-title">Inside Aymap, an ExtJS4 web application, part 2</h1>
+        </header>
+
+        <div class="article-body" itemprop="articleBody">
+          <p>In this post will continue Aymap views exploration and share with you some extension tips and tricks that I&#8217;ve used and I think might be useful for you too in writing your ExtJS4 web application.</p>
+
+<p><strong><em>AyToolbox</em></strong><br />
+If to look in previous part at <code>AyToolbox</code> you can see that contains 5 items of <code>toolboxpanel</code> <code>xtype</code>. This widget does the job for 5 views and has the following define:</p>
+
+<!-- more -->
+
+<pre><code class="language-javascript">Ext.define('AyMap.view.toolbox.Panel',{
+    extend : 'Ext.grid.Panel',
+
+   // More configs
+    initComponent: function(){
+        var me = this,
+            store;
+
+        Ext.apply(me,{
+            // More configs
+            columns: [{
+                width: 100,
+                sortable: true,
+                dataIndex: 'name'
+            }],
+                listeners: {
+                    afterrender: function(view){
+                        view.getPlugin('gridviewdragdrop').dragZone.getDragText = function() {
+                            return this.dragData.records[0].get('name')
+                        }
+
+                        Ext.create('Ext.tip.ToolTip', {
+                            target: view.el,
+                            delegate: view.itemSelector,
+                            trackMouse: true,
+                            renderTo: Ext.getBody(),
+                            listeners: {
+                                beforeshow: function(tip) {
+                                    tip.update(this.getRecord(tip.triggerElement).get('name'));
+                                },
+                                scope: view
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        me.callParent(arguments);
+        store = me.getStore();
+        store.guaranteeRange(0, store.pageSize-1);
+    }
+});
+</code></pre>
+
+<p>Note the best approach on how to add tooltips to grid columns trough delegation, which is much performant than using renderers:</p>
+
+<pre><code class="language-javascript">renderers:  function (value, metadata){
+        metadata.tdAttr = 'data-qtip=&quot; ' + value + '&quot;';
+        return value;
+    }
+</code></pre>
+
+<p>While working on this class I&#8217;ve learned that if to use ExtJS Models at maximum, you can simplify views configurations. If you have a few similar views, like I had in <em>AyToolbox</em>, but your columns <em>dataIndexes</em> are not the same tough have the same goal: to show a description, <strong>then use Model&#8217;s mapping feature</strong>. Below you can see how mapping is done for a few models which are bound to the stores that provide records to those 5 grids within <code>AyToolbox</code>:</p>
+
+<pre><code class="language-javascript">Ext.define('AyMap.model.Output', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {name: 'name', mapping: 'output_name',  type: 'string'}
+
+    ]
+});
+
+Ext.define('AyMap.model.Camera', {
+    extend: 'Ext.data.Model',
+    fields: [
+    	{name: 'name', mapping: 'resource_name',  type: 'string'}
+    ]
+});
+</code></pre>
+
+<p><strong><em>Aymap objects</em></strong><br />
+{% img right ../images/posts/map.png 260 180 %}</p>
+
+<p>If you look at an Aylook map(see left image), you can see some white or transparent fancy boxes. Those are aylook objects, each one having a few common styling properties like: colors, transparency, icons, borders; and a few Aylook specific properties: data related to the surveillance system and its devices. <strong>Under those objects actually stands the powerful ExtJS <code>Ext.Component</code> and the magic of <code>Ext.XTemplate</code></strong>. Using these nice classes, was easy enough just implement basics object layout/template, define an AbstractObject which covers objects common properties and functionalities and then extended it to get all types of objects Aylook would have &#8211; mission accomplished.</p>
+
+<pre><code class="language-javascript">Ext.define('AyMap.ux.AbstractObject', {
+    extend: 'Ext.Component',
+    //More configs
+    createObjTemplate: function(){
+      return  new Ext.XTemplate(
+        //Objects template
+      );
+    }
+});
+
+Ext.define('AyMap.ux.object.Camera', {
+    extend: 'AyMap.ux.AbstractObject',
+    //More specific configs
+});
+</code></pre>
+
+<p>Another trick I&#8217;ve used here is a factory class with a method which actually simplifies objects creation and decouples objects related code from UI code.</p>
+
+<pre><code class="language-javascript">Ext.define('AyMap.util.ObjectFactory', {
+    requires: [
+        'AyMap.ux.object.Camera',
+        'AyMap.ux.object.Zone'
+         //More requires
+    ],
+
+    singleton: true,
+
+    create: function (type, config, extraData) {
+        var object;
+        switch (type) {
+            case 'camera': {
+               // Process configs here, make some changes...then create the object
+               object = Ext.create('AyMap.ux.object.Camera', config);
+            }
+            //More objects
+        return object;
+    }
+});
+</code></pre>
+
+<p><strong><em>Properties windows</em></strong><br />
+One of the main functionality of the Aymap is to change those objects properties according to user&#8217;s preferences. This is done by a few properties windows which also have some common functionality. When building ExtJS applications you often might have common functionalities, which means that you have to use inheritance &#8211; one of the base core feature provided by ExtJS.The same principle was used here. As you can see in images, all windows have in common the colours fieldset and the positions fields, which means that their code can be wrapped in methods that belong to the parent class:</p>
+
+<pre><code class="language-javascript">Ext.define('AyMap.view.Properties', {
+    extend: 'Ext.window.Window'
+
+    //Add window configs, example:
+    modal: true,
+    resizable: false,
+    layout: 'fit',
+    width: 300,
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.apply(me, {
+            title : 'Objects properties'
+            // Add common configs
+        });
+        me.callParent();
+
+        //Add common events, for all windows
+        me.on('beforeclose', me.onBeforeClose,this);
+        me.down('form').on('dirtychange',me.onFormDirtyChange);
+    },
+    getColoursFildsetCfg: function(){
+        return {
+            xtype: 'fieldset'
+            // more configs
+        }
+    },
+    getPositionsFieldsCfg: function(){
+        return {
+            xtype: 'container',
+            layout: 'column',
+            defaultType: 'numberfield',
+            defaults: {
+                labelWidth: 15,
+                minValue: 0,
+                columnWidth: 0.50
+            },
+            items: [{
+                fieldLabel: 'x',
+                name: 'x'
+            },
+            {
+                fieldLabel: 'y',
+                name: 'y'
+            }]
+        };
+    },
+    getFormCfg: function(cfg){
+        return Ext.apply(cfg,{
+            xtype: 'form',
+            frame: false,
+            trackResetOnLoad: true,
+            bodyPadding: 2,
+            buttons: []
+        });
+    }
+    // Add other methods and event handlers that are in common for all windows
+});
+</code></pre>
+
+<p>Then, in the final class, you can customise form&#8217;s items and add other specific code and configs:</p>
+
+<pre><code class="language-javascript">Ext.define('AyMap.view.properties.Camera', {
+    extend: 'AyMap.view.Properties',
+
+    initComponent: function () {
+        var me = this;
+
+        Ext.apply(me, {
+            //Add other specific configs
+            items: [me.getFormCfg({
+                items: [
+                    me.getImgOnFieldCfg(),
+                    me.getPositionsFieldsCfg(),
+                    me.getCheckboxesCfg(),
+                    me.getColorFieldsCfg()
+                ]
+            })]
+        });
+
+        me.callParent();
+    }
+});
+</code></pre>
+
+<p>{% img ../images/posts/camera.png 260 180 %}
+{% img ../images/posts/link.png 260 180 %}
+{% img ../images/posts/panel.png 260 180 %}</p>
+
+<p><strong>Conclusions</strong><br />
+All tips I&#8217;ve shown you and all other you might come up with can make your code smaller and cleaner. Also by applying them we touched some of the applications quality attributes: performance, flexibility and maintainability. Personally, while writing these posts I&#8217;ve learned a important rule that there&#8217;s always place for optimisations. So, think at least twice to the code, before writing and after, if this is the best solution you come up with.</p>
+
+        </div>
+
+
+        <aside>
+          <div class="section"><a href="http://vadimpopa.com/tags/javascript" class="tag">javascript</a> <a href="http://vadimpopa.com/tags/extjs4" class="tag">extjs4</a> </div>
+
+          <div class="section share">
+            <a href="http://www.facebook.com/sharer.php?src=bm&u=http%3a%2f%2fvadimpopa.com%2fpost%2faymap-part-2%2f&t=Inside%20Aymap%2c%20an%20ExtJS4%20web%20application%2c%20part%202" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-facebook"></i></a>
+            <a href="http://twitter.com/intent/tweet?url=http%3a%2f%2fvadimpopa.com%2fpost%2faymap-part-2%2f&text=Inside%20Aymap%2c%20an%20ExtJS4%20web%20application%2c%20part%202&tw_p=tweetbutton" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-twitter"></i></a>
+            <a href="https://plus.google.com/share?url=http%3a%2f%2fvadimpopa.com%2fpost%2faymap-part-2%2f" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-google-plus"></i></a>
+            <a href="http://getpocket.com/edit?url=http%3a%2f%2fvadimpopa.com%2fpost%2faymap-part-2%2f&title=Inside%20Aymap%2c%20an%20ExtJS4%20web%20application%2c%20part%202" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-get-pocket"></i></a>
+          </div>
+
+          
+          
+          <div class="section">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  var disqus_shortname = 'vadimpopacom';
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+          
+          
+        </aside>
+
+      </article>
+
+    </div>
+    <div class="col-md-4">
+      
+<aside class="site">
+<section class="even">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">found on</h2>
+    </div>
+    <div class="found-on-list">
+      <a href="mailto:vadimvpopa@gmail.com" rel="tooltip" title="vadimvpopa@gmail.com"><i class="fa fa-envelope-o"></i></a>
+      <a href="https://twitter.com/vadimvpopa" rel="tooltip" title="twitter"><i class="fa fa-twitter"></i></a>
+      <a href="https://github.com/vadimpopa/" rel="tooltip" title="github"><i class="fa fa-github"></i></a>
+      <a href="http://www.linkedin.com/in/vadimpopa" rel="tooltip" title="linkedin"><i class="fa fa-linkedin"></i></a>
+    </div>
+  </div>
+</section>
+
+
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">category</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/categories/javascript" class="list-group-item">javascript</a>
+      
+      <a href="http://vadimpopa.com/categories/extjs-4" class="list-group-item">extjs-4</a>
+      
+      <a href="http://vadimpopa.com/categories/angularjs1" class="list-group-item">angularjs1</a>
+      
+      <a href="http://vadimpopa.com/categories/charts" class="list-group-item">charts</a>
+      
+      <a href="http://vadimpopa.com/categories/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
+      
+      <a href="http://vadimpopa.com/categories/mobile" class="list-group-item">mobile</a>
+      
+      <a href="http://vadimpopa.com/categories/blog" class="list-group-item">blog</a>
+      
+      <a href="http://vadimpopa.com/categories/d3js" class="list-group-item">d3js</a>
+      
+      <a href="http://vadimpopa.com/categories/github-pages" class="list-group-item">github-pages</a>
+      
+      <a href="http://vadimpopa.com/categories/nvd3" class="list-group-item">nvd3</a>
+      
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">tag</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/tags/javascript" class="list-group-item">javascript</a>
+      
+      <a href="http://vadimpopa.com/tags/extjs4" class="list-group-item">extjs4</a>
+      
+      <a href="http://vadimpopa.com/tags/angularjs" class="list-group-item">angularjs</a>
+      
+      <a href="http://vadimpopa.com/tags/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
+      
+      <a href="http://vadimpopa.com/tags/charts" class="list-group-item">charts</a>
+      
+      <a href="http://vadimpopa.com/tags/controller" class="list-group-item">controller</a>
+      
+      <a href="http://vadimpopa.com/tags/directive" class="list-group-item">directive</a>
+      
+      <a href="http://vadimpopa.com/tags/extjs" class="list-group-item">extjs</a>
+      
+      <a href="http://vadimpopa.com/tags/mobile" class="list-group-item">mobile</a>
+      
+      <a href="http://vadimpopa.com/tags/sprite" class="list-group-item">sprite</a>
+      
+    </div>
+  </div>
+  
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent posts</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/post/sencha-viewmodel-tips/" class="list-group-item">Sencha ViewModel Tips</a>
+      
+      <a href="http://vadimpopa.com/post/compile-can-boost-your-directives/" class="list-group-item">Compile can boost your directives</a>
+      
+      <a href="http://vadimpopa.com/post/split-large-angularjs-controllers-using-the-mixin-pattern/" class="list-group-item">Split large AngularJS Controllers using the Mixin Pattern</a>
+      
+      <a href="http://vadimpopa.com/post/new-year-and-new-blog-powered-by-octopress-and-github-pages/" class="list-group-item">New year and new blog powered by Octopress and Github Pages</a>
+      
+      <a href="http://vadimpopa.com/post/onblur-like-for-a-div-in-angularjs-to-close-a-popup/" class="list-group-item">Onblur like for a div in AngularJS to close a popup</a>
+      
+      <a href="http://vadimpopa.com/post/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/" class="list-group-item">First thoughts about AngularJS from an ExtJS developer perspective</a>
+      
+      <a href="http://vadimpopa.com/post/how-to-add-svg-patterns-in-your-extjs-4-2-1-apps/" class="list-group-item">How to add SVG patterns in your ExtJS 4.2.1 apps</a>
+      
+      <a href="http://vadimpopa.com/post/how-to-add-custom-sprites-in-extjs-charts/" class="list-group-item">How to add custom sprites in ExtJS charts</a>
+      
+      <a href="http://vadimpopa.com/post/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/" class="list-group-item">NVD3 and Raphael as alternative charting libs for Sencha Touch</a>
+      
+      <a href="http://vadimpopa.com/post/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/" class="list-group-item">Sencha ViewModel Tips</a>
+      
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent comments</h2>
+    </div>
+      <div id="dsq-recentcomments" class="dsq-widget"><script type="text/javascript" src="http://disqus.com/forums/vadimpopacom/recent_comments_widget.js?hide_avatars=1"></script></div>
+  </div>
+</aside>
+
+
+    </div>
+  </div>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site">
+      <div class="container">
+        <p>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</p>
+        <p>Powered by <a href="http://gohugo.io" target="_blank" rel="nofollow">Hugo</a></p>
+      </div>
+    </footer>
+
+    <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-36108032-2', 'auto');
+    ga('send', 'pageview');
+    </script>
+    
+
+  </body>
+</html>
+

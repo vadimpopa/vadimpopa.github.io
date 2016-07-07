@@ -1,0 +1,10 @@
+/* Please override here. */
+.dsq-widget {
+	margin: 0 10px;
+	font-size: 14px;
+}
+
+.found-on-list {
+	font-size: 20px; 
+    margin: 10px;
+}

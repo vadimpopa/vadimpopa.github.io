@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Proxy on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/proxy/</link>
+    <description>Recent content in Proxy on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sun, 03 Mar 2013 21:12:06 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/proxy/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title> Sencha Touch 2 SQL proxy for SQLite</title>
+      <link>http://vadimpopa.com/post/sencha-touch-2-sql-proxy-for-sqlite/</link>
+      <pubDate>Sun, 03 Mar 2013 21:12:06 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/sencha-touch-2-sql-proxy-for-sqlite/</guid>
+      <description>
+
+&lt;p&gt;Surfing Sencha forums day by day I&amp;#8217;ve come to the conclusion that today many Sencha Touch 2 users still don&amp;#8217;t know about the nice and well written SQL proxy (&lt;code&gt;Ext.data.proxy.Sql&lt;/code&gt;). Instead of it they use other extensions written by ST users which are easy to find on ST forum. But the default ST proxy also can by used for WebSQL or SQLite with Phonegap plugin and comparing with those extensions has a well written code, is more faster and is part of ST2.&lt;/p&gt;
+
+&lt;p&gt;Saying this I&amp;#8217;ve decided to write a few words about how tot use it, only a few as here there&amp;#8217;s nothing more to write. Mainly because actually the SQL proxy is used like the other ST proxies except that it needs an override.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;App.model.MyModel&#39;, {
+    extend: &#39;Ext.data.Model&#39;,
+
+    config: {
+        proxy: {
+            type: &#39;sql&#39;
+        }
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The only custom configuration is to include the following override of the default method &lt;code&gt;getDatabaseObject&lt;/code&gt; which has platform detection (only for iOS, but should be easy to add for Android too): if is not simulator and it&amp;#8217;s a web view then open the database trough Phonegap plugin &lt;code&gt;sqlitePlugin&lt;/code&gt;, else open it trough overridden method, thus the WebSQL &lt;code&gt;openDatabase&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ext.data.proxy.SQLOverride&#39;, {
+    override: &#39;Ext.data.proxy.SQL&#39;,
+
+/* //Overridden method
+    getDatabaseObject: function() {
+        return openDatabase(this.getDatabase(), &#39;1.0&#39;, &#39;Sencha Database&#39;, 5 * 1024 * 1024);
+    }
+*/
+    getDatabaseObject: function() {
+        var isWebView = false;
+
+        if(Ext.os.is.Android){
+            isWebView = /AppName/i.test(navigator.userAgent);
+        }
+        else
+        if (Ext.os.is.iOS &amp;amp;&amp;amp; !/simulator/i.test(navigator.platform)) {
+            isWebView = /(iPhone|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
+        }
+
+        return isWebView ? sqlitePlugin.openDatabase(&amp;quot;data.sqlite&amp;quot;) : this.callParent();
+    }
+ });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can find the Phonegap plugin on github: &lt;a href=&#34;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&#34; title=&#34;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&#34;&gt;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Also you can check this &lt;a href=&#34;http://druckit.wordpress.com/2013/04/02/revisiting-the-sencha-touch-2-2-sql-proxy/&#34;&gt;blog post&lt;/a&gt; for a nice cover.&lt;/p&gt;
+
+&lt;h4 id=&#34;edit-25-03-2013&#34;&gt;&lt;strong&gt;EDIT(25.03.2013):&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;Edited this post to add Android part. In the override just replaced the code of the &lt;em&gt;getDatabaseObject&lt;/em&gt;. And with the default user agent is impossible to indetify if it&amp;#8217;s a WebView or a browser. To overcome this, in case if you are on Phonegap, as I was, just set you user agent like following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;@Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        super.appView.getSettings().setUserAgentString(
+        	    super.appView.getSettings().getUserAgentString()
+        	    + &amp;quot; &amp;quot;
+        	    + getString(R.string.app_name));
+
+        super.loadUrl(Config.getStartUrl());
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

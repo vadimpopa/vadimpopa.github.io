@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Compile on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/compile/</link>
+    <description>Recent content in Compile on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sun, 01 Feb 2015 22:59:32 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/compile/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Compile can boost your directives</title>
+      <link>http://vadimpopa.com/post/compile-can-boost-your-directives/</link>
+      <pubDate>Sun, 01 Feb 2015 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/post/compile-can-boost-your-directives/</guid>
+      <description>&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/rocket.png&#34; style=&#34;display: block;margin: 0 auto; width:150px;height:150px;&#34;&gt;
+Use whenever you can &lt;a href=&#34;https://github.com/angular/angular.js/wiki/Understanding-Directives&#34;&gt;compile&lt;/a&gt; to boost your Angular directives and get rid of whatchers. For instance we have a &lt;code&gt;directive&lt;/code&gt; which acts as a data row in a &lt;code&gt;ngRepeat&lt;/code&gt;, like a grid row. Only besides the trivial columns this row has some action buttons.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!--myDataRow.tpl.html--&amp;gt;
+&amp;lt;div class=&amp;quot;my-data-row&amp;quot; ng-class=&amp;quot;{ &#39;my-data-row-selected&#39;: row.isSelected }&amp;quot; layout=&amp;quot;row&amp;quot;&amp;gt;
+    &amp;lt;span class=&amp;quot;my-data-row-name&amp;quot;&amp;gt;
+      &amp;lt;a class=&amp;quot;my-data-row-id&amp;quot; href=&amp;quot;&amp;quot;&amp;gt;{{ row.id }}&amp;lt;/a&amp;gt;
+      &amp;lt;span&amp;gt;{{ row.name }}&amp;lt;/span&amp;gt;
+    &amp;lt;/span&amp;gt;
+    &amp;lt;span class=&amp;quot;my-data-row-actions&amp;quot; flex&amp;gt;
+      &amp;lt;i ng-show=&amp;quot;canCommentAction&amp;quot; class=&amp;quot;my-data-row-actions-comment icon&amp;quot; ng-click=&amp;quot;commentOnEntity($event)&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+      &amp;lt;i ng-show=&amp;quot;canDeleteAction&amp;quot; class=&amp;quot;my-data-row-actions-delete icon&amp;quot; ng-click=&amp;quot;deleteEntity($event)&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+      &amp;lt;i class=&amp;quot;icon&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;
+    &amp;lt;/span&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;function myDataRowDirective() {
+    return {
+        restrict: &#39;E&#39;,
+        replace: true,
+        templateUrl: &#39;directives/myDataRow/myDataRow.tpl.html&#39;,
+        scope: {
+            row: &#39;=&#39;,
+            onDelete: &#39;&amp;amp;?&#39;,
+            onComment: &#39;&amp;amp;?&#39;
+        },
+        link: myDataRowLink
+    };
+}
+
+function myDataRowLink(scope, element, attrs) {
+  //the ngShow flags are defined for the row actions
+    scope.canDeleteAction = attrs.onDelete;
+    scope.canCommentAction = attrs.onComment;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;!--Use of myDataRow--&amp;gt;
+ &amp;lt;my-data-row
+      on-delete=&amp;quot;stories.deleteStory(story, $event)&amp;quot;
+      on-comment=&amp;quot;stories.commentOnStory(story, $event)&amp;quot;
+      ng-repeat=&amp;quot;story in stories.userStories | filter: stories.searchUserStories | filter: stories.filterUserStoriesObj | orderBy: &#39;index&#39; track by story.id&amp;quot;
+      row=&amp;quot;story&amp;quot;&amp;gt;
+&amp;lt;/my-data-row&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Everything is fine, the directive works ok. But once the view gets heavy and has a lot of rows to show the user encounters slow responsiveness. The reasons may be beacause of the digest(sometimes running form &lt;code&gt;rootScope&lt;/code&gt;) cycle which runs trough many watchers. In an AngularJS app you can see whatchers everywhere including in &lt;a href=&#34;https://github.com/angular/angular.js/blob/master/src/ng/directive/ngShowHide.js&#34;&gt;ngShows&lt;/a&gt;  used within above template. Having them in a directive within an &lt;code&gt;ngRepeat&lt;/code&gt; adds more overhead to responsivness.&lt;/p&gt;
+
+&lt;p&gt;Here comes &lt;code&gt;compile&lt;/code&gt; which gets rid of whatchers. Instead of checking whether to show or not the action buttons in the &lt;code&gt;link&lt;/code&gt; function, do it in &lt;code&gt;compile&lt;/code&gt;. This way the directive gets rid of 2 &lt;code&gt;ngShows&lt;/code&gt; and at the same time of 2 &lt;code&gt;whatchers&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;// myDataRowDirective optimized
+function myDataRowDirective() {
+    return {
+        restrict: &#39;E&#39;,
+        replace: true,
+        templateUrl: &#39;directives/myDataRow/myDataRow.tpl.html&#39;,
+        scope: {
+            row: &#39;=&#39;,
+            onDelete: &#39;&amp;amp;?&#39;,
+            onComment: &#39;&amp;amp;?&#39;
+        },
+        compile: myDataRowCompile
+    };
+}
+
+function myDataRowCompile(tElement, tAttrs) {
+    if (!tAttrs.onDelete) {
+        tElement.find(&#39;.my-data-row-actions-delete&#39;).remove();
+    }
+    if (!tAttrs.onComment) {
+        tElement.find(&#39;.my-data-row-actions-comment&#39;).remove();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In the end would like to suggest you to read this stackoverflow &lt;a href=&#34;http://stackoverflow.com/questions/12164138/what-is-the-difference-between-compile-and-link-function-in-angularjs&#34;&gt;thread&lt;/a&gt; which references a few examples of when and how to use &lt;code&gt;compile&lt;/code&gt; instead of &lt;code&gt;link&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Happy 2015 coding !&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
