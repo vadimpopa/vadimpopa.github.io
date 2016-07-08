@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Phonegap on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/phonegap/</link>
+    <description>Recent content in Phonegap on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Mon, 29 Apr 2013 17:50:16 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/phonegap/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Sencha ViewModel Tips</title>
+      <link>http://vadimpopa.com/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/</link>
+      <pubDate>Mon, 29 Apr 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/</guid>
+      <description>&lt;p&gt;As you can see on Sencha &lt;a title=&#34;http://www.sencha.com/products/touch/&#34; href=&#34;http://www.sencha.com/products/touch/&#34; target=&#34;_blank&#34;&gt;site&lt;/a&gt;,  Sencha Touch (ST) was developed to take advantage of &lt;strong&gt;hardware acceleration&lt;/strong&gt;. In case you don&amp;#8217;t know what hardware acceleration means and if you are starting to work on your first ST application then you should be informed about it as it might affect your app performance and responsiveness. Particularly when using PhoneGap 2.6(2.x) to deploy natively for Android 4.x, because Android default browser still has performance problems with 3D CSS transforms.&lt;/p&gt;
+
+&lt;p&gt;To find more about the meaning of hardware acceleration in mobile technology you can visit these blogs:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;About hardware acceleration: &lt;a title=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34; href=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34;&gt;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&lt;/a&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;And what means to have it in your app: &lt;a title=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/&#34; href=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps&#34;&gt;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps&lt;/a&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Also I recommend a very good &lt;a href=&#34;http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome&#34; title=&#34;http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome&#34;&gt;post&lt;/a&gt; about GPU accelerated compositing in Chrome.&lt;/p&gt;
+
+&lt;p&gt;Where hardware acceleration is used in ST? You can see it almost everywhere, in some layouts, scroller, list and in animations. As example, the Card layout, basically it works on translate3d. You must be careful with your DOM size, where and how you use the elements which trigger hardware acceleration. And if you deployed your hybrid Android app and you feel low performance and responsiveness then you might &lt;strong&gt;check if you disabled hardware acceleration in PhoneGap&amp;#8217;s Android Manifest&lt;/strong&gt;. By disabling, paradoxically it will boost your application to an acceptable level. Note that once is disabled then you will have to stick with flat effects because the 3D transforms, more exactly the Z axe won&amp;#8217;t work &amp;#8211; a needed CSS for such component like the &lt;a title=&#34;Coverflow&#34; href=&#34;http://twomonkeys.com.ar/lab/cover/&#34; target=&#34;_blank&#34;&gt;Coverflow&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mobile on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/mobile/</link>
+    <description>Recent content in Mobile on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sat, 22 Jun 2013 17:50:16 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/mobile/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>NVD3 and Raphael as alternative charting libs for Sencha Touch</title>
+      <link>http://vadimpopa.com/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</link>
+      <pubDate>Sat, 22 Jun 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</guid>
+      <description>&lt;p&gt;Below my short journey in taking a look to NVD3 and Raphael as alternative charting libraries for &lt;a title=&#34;Sencha Touch 2&#34; href=&#34;http://www.sencha.com/products/touch&#34; target=&#34;_blank&#34;&gt;Sencha Touch&lt;/a&gt;(ST). ST has a powerful and nice charting library which is included as a part of Touch (available as GPLv3 or as a part of Sencha Complete and Complete: Team). Yet I&amp;#8217;ve wanted to try other charts libs with a more flexible license which will allow me to integrate them easily in a ST app and develop a simple line chart ST component.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/raphael_chart-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:280px;height:200px;&#34;&gt;
+First on the list was &lt;a href=&#34;http://raphaeljs.com&#34; target=&#34;_blank&#34;&gt;Raphael&lt;/a&gt; which is part of Sencha Labs. Integration went pretty easy, and with a few lines of code, a simple basic line chart component in ST was ready. Many thanks to the author of this &lt;a href=&#34;http://www.exratione.com/2011/10/a-few-tips-for-graphael-line-charts/&#34;&gt;blog&lt;/a&gt; from which I took the Raphael example.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;/*
+ * xtype: &#39;rchartline&#39;,
+ * chartData: {
+ *   x: [1, 2, 3, 4, 5, 6, 7],
+ *   y: [12, 32, 23, 15, 17, 27, 22]
+ * }
+ */
+
+Ext.define(&#39;Ux.chart.RLine&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;rchartline&#39;,
+
+    config: {
+        chartCfg:  {
+           nostroke: false,   // lines between points are drawn
+           axis: &amp;quot;0 0 1 1&amp;quot;,   // draw axes on the left and bottom
+           symbol: &amp;quot;circle&amp;quot;,    // use a filled circle as the point symbol
+           smooth: true,      // curve the lines to smooth turns on the chart
+           dash: &amp;quot;-&amp;quot;,         // draw the lines dashed
+           colors: [
+             &amp;quot;#995555&amp;quot;,       // the first line is red
+             &amp;quot;#555599&amp;quot;        // the second line is blue
+           ]
+         },
+         chartData: {
+          x: [],
+          y: []
+         }
+    },
+    initialize: function(){
+      this.canvas = Raphael(this.innerElement.createChild({tag: &amp;quot;div&amp;quot;, cls: &#39;raphael-chartWrapper&#39;}).dom);
+
+      this.on(&#39;painted&#39;,function(){
+          var data = this.getChartData();
+
+          this.canvas.linechart(10,10,390,180,data.x,data.y,this.getChartCfg());
+      });
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/nvd3-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:200px;height:160px;&#34;&gt;
+Next one was &lt;a href=&#34;http://nvd3.org&#34; target=&#34;_blank&#34;&gt;NVD3&lt;/a&gt;, a very nice simple library based on the powerful &lt;a href=&#34;http://d3js.org&#34; target=&#34;_blank&#34;&gt;D3&lt;/a&gt;. While NVD3 is not documented, D3 seems very well documented, and since the former is sort of facade to the second, it&amp;#8217;s good to check for examples and documentation on both sites. As you can see form first example you can suppose already that making an ST chart component based on NVD3 is also easy, which is true. The difference is that following example has the implementation of real time update while on Raphael it doesn&amp;#8217;t. That&amp;#8217;s because I was constrained by project time and haven&amp;#8217;t had it enough for looking the best way of how to do it (one of the ideas which worked was a call of canvas.clear() and draw the chart from scratch with linechart method).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Line&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;chartline&#39;,
+
+    initialize: function(){
+
+      nv.addGraph(Ext.bind(function(){
+          var chart = nv.models.lineChart();
+
+          chart.xAxis.tickFormat(function (d) {
+            return d3.time.format(&#39;%x&#39;)(new Date(d))
+          });
+
+          chart.yAxis.tickFormat(d3.format(&#39;,.1%&#39;));
+
+          d3.select(this.innerElement.dom).append(&#39;svg&#39;);
+
+          nv.utils.windowResize(chart.update);
+
+          this.chart = chart;
+
+          return chart;
+      },this));
+
+      this.on(&#39;painted&#39;,function(){
+          this.redraw();
+
+          setInterval(Ext.bind(function () {
+            var long = this.getData()[0].values,
+                next = new Date(long[long.length - 1].x);
+
+            next.setDate(next.getDate() + 1);
+            long.shift();
+            long.push({x:next.getTime(), y:Math.random() * 100});
+
+            this.redraw();
+
+          },this), 1500);
+      },this)
+
+    },
+
+    redraw: function() {
+      d3.select(this.innerElement.down(&#39;svg&#39;).dom)
+            .datum(this.getData())
+            .transition().duration(500)
+            .call(this.chart);
+    },
+    generateData: function() {
+        var arr = [],
+            theDate = new Date(2012, 01, 01, 0, 0, 0, 0);
+
+        for (var x = 0; x &amp;amp;lt; 30; x++) {
+            arr.push({x: theDate.getTime(), y: Math.random() * 100});
+            theDate.setDate(theDate.getDate() + 1);
+        }
+        return arr;
+    },
+    getData: function() {
+      return [{
+        &amp;quot;key&amp;quot;: &amp;quot;Long&amp;quot;,
+        &amp;quot;values&amp;quot;: this.generateData()
+      }];
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At first impression D3 seems very powerful in charts drawing and richer than Raphael. Since it gave good results I stopped looking for other libraries and started work on an extension based on NVD3 and above example. For full examples source code and a running demo check my &lt;a href=&#34;https://github.com/vadimpopa/Ux.chart.Line&#34; target=&#34;_blank&#34;&gt;github repo&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;My journey stops here and I wish you happy charting.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Sencha ViewModel Tips</title>
+      <link>http://vadimpopa.com/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/</link>
+      <pubDate>Mon, 29 Apr 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/</guid>
+      <description>&lt;p&gt;As you can see on Sencha &lt;a title=&#34;http://www.sencha.com/products/touch/&#34; href=&#34;http://www.sencha.com/products/touch/&#34; target=&#34;_blank&#34;&gt;site&lt;/a&gt;,  Sencha Touch (ST) was developed to take advantage of &lt;strong&gt;hardware acceleration&lt;/strong&gt;. In case you don&amp;#8217;t know what hardware acceleration means and if you are starting to work on your first ST application then you should be informed about it as it might affect your app performance and responsiveness. Particularly when using PhoneGap 2.6(2.x) to deploy natively for Android 4.x, because Android default browser still has performance problems with 3D CSS transforms.&lt;/p&gt;
+
+&lt;p&gt;To find more about the meaning of hardware acceleration in mobile technology you can visit these blogs:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;About hardware acceleration: &lt;a title=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34; href=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&#34;&gt;http://www.sencha.com/blog/understanding-hardware-acceleration-on-mobile-browsers/&lt;/a&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;And what means to have it in your app: &lt;a title=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/&#34; href=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps&#34;&gt;http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps&lt;/a&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Also I recommend a very good &lt;a href=&#34;http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome&#34; title=&#34;http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome&#34;&gt;post&lt;/a&gt; about GPU accelerated compositing in Chrome.&lt;/p&gt;
+
+&lt;p&gt;Where hardware acceleration is used in ST? You can see it almost everywhere, in some layouts, scroller, list and in animations. As example, the Card layout, basically it works on translate3d. You must be careful with your DOM size, where and how you use the elements which trigger hardware acceleration. And if you deployed your hybrid Android app and you feel low performance and responsiveness then you might &lt;strong&gt;check if you disabled hardware acceleration in PhoneGap&amp;#8217;s Android Manifest&lt;/strong&gt;. By disabling, paradoxically it will boost your application to an acceptable level. Note that once is disabled then you will have to stick with flat effects because the 3D transforms, more exactly the Z axe won&amp;#8217;t work &amp;#8211; a needed CSS for such component like the &lt;a title=&#34;Coverflow&#34; href=&#34;http://twomonkeys.com.ar/lab/cover/&#34; target=&#34;_blank&#34;&gt;Coverflow&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

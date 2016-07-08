@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Charts on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/charts/</link>
+    <description>Recent content in Charts on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sat, 07 Sep 2013 17:50:16 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/charts/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>How to add custom sprites in ExtJS charts</title>
+      <link>http://vadimpopa.com/how-to-add-custom-sprites-in-extjs-charts/</link>
+      <pubDate>Sat, 07 Sep 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/how-to-add-custom-sprites-in-extjs-charts/</guid>
+      <description>&lt;p&gt;Though ExtJS charts are very rich in features sometimes our clients want more. Very often they want some specific features which in the end leads to adding new custom sprites to the charts. And ExtJS is ready to help us with the needed tools to accomplish those features and make the client happy.&lt;/p&gt;
+
+&lt;p&gt;In this post I&amp;#8217;m going to add some light on how to add custom sprites in ExtJS charts based on a real world example. Let&amp;#8217;s say that the client would need sort of threshold line which would outline a few areas on the chart.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/charts_thresholds.png&#34; style=&#34;display: block;margin: 0 auto; width:380px;height:300px;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;First thought which comes is how this feature would be integrated in our chart component, in a easy way that is usual for ExtJS and its users. Right, first we would need some chart configs, something like these ones below, or even could be an array of them:&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;{
+    threshold: 36,
+    title: &#39;Goal&#39;
+ }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Luckily we can benefit of ExtJS&amp;#8217;s tools like plugins, mixins, extensions and drawing classes. Assuming that you know already the difference between a mixin and a plugin, I&amp;#8217;ll answer to the question which we brought earlier that for integration we would need a plugin.&lt;/p&gt;
+
+&lt;p&gt;Now we can wrap those configs in a plugin config, in a chart component:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.create(&#39;Ext.chart.Chart&#39;, {
+        plugins: [{
+            ptype: &#39;chartthresholds&#39;,
+            items: [{
+                  threshold: 36,
+                  title: &#39;Goal&#39;
+            },{
+                threshold: 66,
+                title: &#39;Huge&#39;
+            }]
+        }]
+    });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Having already the definition of the task, now we can define our plugin:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Thresholds&#39;, {
+    extend: &#39;Ext.AbstractPlugin&#39;,
+    alias: &amp;quot;plugin.chartthresholds&amp;quot;,
+    constructor: function(config) {
+      var me = this;
+
+      // The collections of threshold items
+      me.items = [];
+
+      if (config) {
+          Ext.apply(me, config);
+      }
+    },
+     /**
+     * The plugin initialization method which the owning Component calls at Component initialization time.
+     */
+    init : function(chart){}
+
+    /**
+     * The plugin cleanup method which the owning Component calls at Component destruction time.
+     */
+    destroy : function() {}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you see from task definition we can have more threshold items, so our plugin will have a second purpose, which is, to act as a collection of threshold items.&lt;/p&gt;
+
+&lt;p&gt;Now as we have the collection class prototyped we need the item, a ExtJS tool to use for to display on the chart a line and a text. Always look the answer in ExtJS source code in the respective classes. Since we are working with charts and drawing we can get the answer in a snap by looking for example how Legend is created, that we need to use Sprites to draw both the line and the text and a CompositeSprite to wrap them.&lt;/p&gt;
+
+&lt;p&gt;But why would we need a CompositeSprite ? as the docs say a composite Sprite handles a group of sprites with common methods to a sprite such as hide, show, setAttributes. These methods are applied to the set of sprites added to the group. I would add also to importance the destroy method.&lt;/p&gt;
+
+&lt;p&gt;Our threshold item gets the following definition:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.ThresholdItem&#39;, {
+        extend: &#39;Ext.draw.CompositeSprite&#39;,
+
+        visible: false,
+
+        constructor: function(config) {
+            var me = this;
+
+            if (config) {
+                Ext.apply(me, config);
+            }
+
+            me.callParent();
+
+            me.on(&#39;mousedown&#39;, me.onMouseDown, me);
+        },
+
+        /**
+         * @private Handler for threshold selecting/deselecting
+         */
+        onMouseDown: function() {
+        }
+    });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next will finish our prototyping with adding methods definitions to the plugin for both sprites, the line and text:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Thresholds&#39;, {
+    extend: &#39;Ext.AbstractPlugin&#39;,
+
+    .....................
+
+   /**
+    * @private Redraws all items, called after each chart redraw
+    */
+    redraw: function(){},
+
+    /**
+     * @private Draws threshold items
+     */
+     drawItems: function(){},
+
+    /**
+     * @private Creates label sprite and/or redraws it to the given position
+     */
+    drawLabel: function(item,x,y,z) {},
+
+    /**
+     * @private Creates line sprite and/or redraws it to the given position
+     */
+    drawLine: function(item,fromX, fromY, toX, toY, z) {
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once we are done with prototyping we can proceed to sprites drawing.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;drawLine: function(item,fromX, fromY, toX, toY, z) {
+            var line = item.get(&#39;line&#39;),
+                path = &#39;M&#39; + fromX + &#39;,&#39; + fromY + &#39;L&#39; + toX + &#39;,&#39; + toY;
+
+            if(line){
+                line.setAttributes({ path : path},true);
+            }else{
+                line = item.add(&#39;line&#39;, item.surface.add({
+                    type: &#39;path&#39;,
+                    path: path,
+                    zIndex: z,
+                    &amp;quot;stroke-width&amp;quot;: this.lineWidth,
+                    opacity: 0,
+                    fill: &#39;#a0142c&#39;,
+                    stroke: this.lineStroke,
+                    style: {
+                        cursor: &#39;pointer&#39;
+                    }
+                }));
+            }
+
+            return line;
+        },
+        drawLabel: function(item,x,y,z) {
+            var label = item.get(&#39;label&#39;);
+
+            if(label){
+                label.setAttributes({ x:x, y:y },true);
+            }else{
+                label = item.add(&#39;label&#39;, item.surface.add({
+                    type: &#39;text&#39;,
+                    x: x,
+                    y: y,
+                    zIndex: z,
+                    fill: this.labelColor,
+                    font: this.labelFont,
+                    text: item.title,
+                    style: {
+                        cursor: &#39;pointer&#39;
+                    }
+                }));
+            }
+            return label;
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Drawing methods are ready, it&amp;#8217;s time to get their coordinates. The coordinates are relative to design specifications, what&amp;#8217;s important is to get the idea on how to get them and how to use. Once you understand this you can play with positioning according to your designs. Below method it&amp;#8217;s what you would need to get started with the game.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;drawItems: function(){
+            var me = this,
+                chart = me.cmp,
+                axes = chart.axes,
+                leftAxis = axes.get(&#39;left&#39;),
+                stepHeight = leftAxis.length / (leftAxis.to - leftAxis.from),
+                x2 = leftAxis.width + leftAxis.x,
+                zIndex = (this.zIndex || 0) + 2,
+                items = me.items,
+                li = items.length,
+                i = 0,
+                y1,item;
+
+            for (; i &amp;amp;lt; li; i++) {
+                item = items[i];
+
+                y1 = leftAxis.y - stepHeight * item.threshold;
+
+                me.drawLabel(item,5,y1, zIndex + 1);
+                me.drawLine(item,5,y1-1,x2,y1-1,zIndex);
+
+                if(!item.visible){
+                    item.setAttributes({
+                        hidden: false
+                    }, true);
+
+                    item.visible = true;
+                }
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It&amp;#8217;s time to instantiate the items:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;createItems: function() {
+            var me = this,
+                surface = me.cmp.surface,
+                items = me.items,
+                li = items.length,
+                i = 0,
+                item;
+
+            for (; i &amp;amp;lt; li; i++) {
+                item[i] = Ext.create(&#39;Ux.chart.ThresholdItem&#39;,Ext.apply({
+                    thresholds: me,
+                    surface: surface
+                },items[i]));
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then finally redraw and init the plugin:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;init: function (chart) {
+            this.labelColor = chart.textColor;
+
+            if(this.visible)
+                Ext.Function.interceptAfter(chart,&amp;quot;redraw&amp;quot;,this.redraw,this);
+        },
+        redraw: function() {
+            var me = this;
+
+            if (!me.created) {
+                me.created = true;
+                me.createItems();
+            }
+
+            if(me.visible)
+                me.drawItems();
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice that the visible config, you could add a few lines of code to add some laziness and to make the threshold item visible later but not at first chart redraw.&lt;/p&gt;
+
+&lt;p&gt;And yes, we end with cleaning:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;destroy: function(){
+            var items = this.items,
+                li = items.length,
+                i = 0;
+            
+            for (; i &amp;amp;lt; li; i++) {
+                items[i].destroy();
+            }
+        }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That&amp;#8217;s it, have a enjoyable charts customizing process.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NVD3 and Raphael as alternative charting libs for Sencha Touch</title>
+      <link>http://vadimpopa.com/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</link>
+      <pubDate>Sat, 22 Jun 2013 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/</guid>
+      <description>&lt;p&gt;Below my short journey in taking a look to NVD3 and Raphael as alternative charting libraries for &lt;a title=&#34;Sencha Touch 2&#34; href=&#34;http://www.sencha.com/products/touch&#34; target=&#34;_blank&#34;&gt;Sencha Touch&lt;/a&gt;(ST). ST has a powerful and nice charting library which is included as a part of Touch (available as GPLv3 or as a part of Sencha Complete and Complete: Team). Yet I&amp;#8217;ve wanted to try other charts libs with a more flexible license which will allow me to integrate them easily in a ST app and develop a simple line chart ST component.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/raphael_chart-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:280px;height:200px;&#34;&gt;
+First on the list was &lt;a href=&#34;http://raphaeljs.com&#34; target=&#34;_blank&#34;&gt;Raphael&lt;/a&gt; which is part of Sencha Labs. Integration went pretty easy, and with a few lines of code, a simple basic line chart component in ST was ready. Many thanks to the author of this &lt;a href=&#34;http://www.exratione.com/2011/10/a-few-tips-for-graphael-line-charts/&#34;&gt;blog&lt;/a&gt; from which I took the Raphael example.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;/*
+ * xtype: &#39;rchartline&#39;,
+ * chartData: {
+ *   x: [1, 2, 3, 4, 5, 6, 7],
+ *   y: [12, 32, 23, 15, 17, 27, 22]
+ * }
+ */
+
+Ext.define(&#39;Ux.chart.RLine&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;rchartline&#39;,
+
+    config: {
+        chartCfg:  {
+           nostroke: false,   // lines between points are drawn
+           axis: &amp;quot;0 0 1 1&amp;quot;,   // draw axes on the left and bottom
+           symbol: &amp;quot;circle&amp;quot;,    // use a filled circle as the point symbol
+           smooth: true,      // curve the lines to smooth turns on the chart
+           dash: &amp;quot;-&amp;quot;,         // draw the lines dashed
+           colors: [
+             &amp;quot;#995555&amp;quot;,       // the first line is red
+             &amp;quot;#555599&amp;quot;        // the second line is blue
+           ]
+         },
+         chartData: {
+          x: [],
+          y: []
+         }
+    },
+    initialize: function(){
+      this.canvas = Raphael(this.innerElement.createChild({tag: &amp;quot;div&amp;quot;, cls: &#39;raphael-chartWrapper&#39;}).dom);
+
+      this.on(&#39;painted&#39;,function(){
+          var data = this.getChartData();
+
+          this.canvas.linechart(10,10,390,180,data.x,data.y,this.getChartCfg());
+      });
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/nvd3-280x200.png&#34; style=&#34;display: block;margin: 0 auto; width:200px;height:160px;&#34;&gt;
+Next one was &lt;a href=&#34;http://nvd3.org&#34; target=&#34;_blank&#34;&gt;NVD3&lt;/a&gt;, a very nice simple library based on the powerful &lt;a href=&#34;http://d3js.org&#34; target=&#34;_blank&#34;&gt;D3&lt;/a&gt;. While NVD3 is not documented, D3 seems very well documented, and since the former is sort of facade to the second, it&amp;#8217;s good to check for examples and documentation on both sites. As you can see form first example you can suppose already that making an ST chart component based on NVD3 is also easy, which is true. The difference is that following example has the implementation of real time update while on Raphael it doesn&amp;#8217;t. That&amp;#8217;s because I was constrained by project time and haven&amp;#8217;t had it enough for looking the best way of how to do it (one of the ideas which worked was a call of canvas.clear() and draw the chart from scratch with linechart method).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ux.chart.Line&#39;,{
+    extend: &#39;Ext.Component&#39;,
+
+    xtype: &#39;chartline&#39;,
+
+    initialize: function(){
+
+      nv.addGraph(Ext.bind(function(){
+          var chart = nv.models.lineChart();
+
+          chart.xAxis.tickFormat(function (d) {
+            return d3.time.format(&#39;%x&#39;)(new Date(d))
+          });
+
+          chart.yAxis.tickFormat(d3.format(&#39;,.1%&#39;));
+
+          d3.select(this.innerElement.dom).append(&#39;svg&#39;);
+
+          nv.utils.windowResize(chart.update);
+
+          this.chart = chart;
+
+          return chart;
+      },this));
+
+      this.on(&#39;painted&#39;,function(){
+          this.redraw();
+
+          setInterval(Ext.bind(function () {
+            var long = this.getData()[0].values,
+                next = new Date(long[long.length - 1].x);
+
+            next.setDate(next.getDate() + 1);
+            long.shift();
+            long.push({x:next.getTime(), y:Math.random() * 100});
+
+            this.redraw();
+
+          },this), 1500);
+      },this)
+
+    },
+
+    redraw: function() {
+      d3.select(this.innerElement.down(&#39;svg&#39;).dom)
+            .datum(this.getData())
+            .transition().duration(500)
+            .call(this.chart);
+    },
+    generateData: function() {
+        var arr = [],
+            theDate = new Date(2012, 01, 01, 0, 0, 0, 0);
+
+        for (var x = 0; x &amp;amp;lt; 30; x++) {
+            arr.push({x: theDate.getTime(), y: Math.random() * 100});
+            theDate.setDate(theDate.getDate() + 1);
+        }
+        return arr;
+    },
+    getData: function() {
+      return [{
+        &amp;quot;key&amp;quot;: &amp;quot;Long&amp;quot;,
+        &amp;quot;values&amp;quot;: this.generateData()
+      }];
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At first impression D3 seems very powerful in charts drawing and richer than Raphael. Since it gave good results I stopped looking for other libraries and started work on an extension based on NVD3 and above example. For full examples source code and a running demo check my &lt;a href=&#34;https://github.com/vadimpopa/Ux.chart.Line&#34; target=&#34;_blank&#34;&gt;github repo&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;My journey stops here and I wish you happy charting.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

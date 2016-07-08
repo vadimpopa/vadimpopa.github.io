@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Controller on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/controller/</link>
+    <description>Recent content in Controller on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sun, 02 Mar 2014 21:12:06 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/controller/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Split large AngularJS Controllers using the Mixin Pattern</title>
+      <link>http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/</link>
+      <pubDate>Sun, 02 Mar 2014 21:12:06 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/</guid>
+      <description>&lt;p&gt;In case if your controller became too large and the inheritance is not a solution, the Mixin pattern can solve this problem very easy by splitting the logic in mixins each serving a functionality or a feature. Within AngularJS I found a easy to do it by using the &lt;code&gt;$controller&lt;/code&gt; service.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//AngularJS Mixin
+app.controller(&#39;CanSingController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	$scope.sing = function() {
+	         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+	    };
+    }
+]);
+
+
+app.controller(&#39;MusicianController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	var canSingCtrl = $controller(&#39;CanSingController&#39;,{$scope: $scope});
+
+    	$scope.whatMusicianCanDo = function() {
+
+    		//Call locally, or best call sing in your view
+    		$scope.sing();
+    	};
+    }
+]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For fun and comparation I brought also an ExtJS example found in its &lt;a href=&#34;http://docs.sencha.com/extjs/4.2.2/#!/api/Ext.Class-cfg-mixins&#34; title=&#34;http://docs.sencha.com/extjs/4.2.2/#!/api/Ext.Class-cfg-mixins&#34;&gt;documentation&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//ExtJS Mixin
+Ext.define(&#39;CanSing&#39;, {
+     sing: function() {
+         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+     }
+});
+
+Ext.define(&#39;Musician&#39;, {
+     mixins: [&#39;CanSing&#39;]
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So the &lt;code&gt;Musician&lt;/code&gt; will get a &lt;code&gt;sing&lt;/code&gt; method from &lt;code&gt;CanSing&lt;/code&gt; &lt;code&gt;controller&lt;/code&gt;/&lt;code&gt;mixin&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If to raise same issue from ExtJS&amp;rsquo;s documentation: &lt;em&gt;what if the Musician already has a sing method? Or you want to mix in two classes, both of which define sing?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In AngularJS this can be solved by defining the &lt;code&gt;sing&lt;/code&gt; method in the instantiated mixin, and use an identifier or a local variable within the parent controller to keep that instance:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//AngularJS Mixin without overriding
+app.controller(&#39;CanSingController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+
+	    return {
+	    	sing: function() {
+		         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+		    }
+	    }
+    }
+]);
+
+app.controller(&#39;MusicianController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	var canSing = $controller(&#39;CanSingController as canSing&#39;,{$scope: $scope}),
+
+    	$scope.sing = function() {
+
+    		// call trough the local variable
+    		canSing.sing();	
+
+    		//call trough the indentifier
+    		$scope.canSing.sing();
+    	}
+    }
+]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Usually I define within the &lt;code&gt;$scope&lt;/code&gt; the methods which are going to be exposed in views and in the instance the ones which will be called locally in the parent controller. This way I preserve a sort of encapsulation and also looks cleaner. But when defining wihtin the &lt;code&gt;$scope&lt;/code&gt; just make sure not to have overrides. To avoid them you could just use the &lt;code&gt;identifier&lt;/code&gt; approach which in some way also gives sort of encapsulation of all methods within one property.&lt;/p&gt;
+
+&lt;p&gt;In ExtJS: &lt;em&gt;it&amp;rsquo;s good to define mixins as an object, where you assign a name to each mixin. In this case the sing method of &lt;code&gt;Musician&lt;/code&gt; will overwrite the mixed in &lt;code&gt;sing&lt;/code&gt; method. But you can access the original mixed in method through special mixins property.&lt;/em&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//ExtJS Mixin without overriding
+Ext.define(&#39;Musician&#39;, {
+     mixins: {
+         canSing: &#39;CanSing&#39;
+     },
+
+     sing: function() {
+         // delegate singing operation to mixin
+         this.mixins.canSing.sing.call(this);
+     }
+})
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title> Sencha Touch 2 SQL proxy for SQLite</title>
+      <link>http://vadimpopa.com/sencha-touch-2-sql-proxy-for-sqlite/</link>
+      <pubDate>Sun, 03 Mar 2013 21:12:06 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/sencha-touch-2-sql-proxy-for-sqlite/</guid>
+      <description>
+
+&lt;p&gt;Surfing Sencha forums day by day I&amp;#8217;ve come to the conclusion that today many Sencha Touch 2 users still don&amp;#8217;t know about the nice and well written SQL proxy (&lt;code&gt;Ext.data.proxy.Sql&lt;/code&gt;). Instead of it they use other extensions written by ST users which are easy to find on ST forum. But the default ST proxy also can by used for WebSQL or SQLite with Phonegap plugin and comparing with those extensions has a well written code, is more faster and is part of ST2.&lt;/p&gt;
+
+&lt;p&gt;Saying this I&amp;#8217;ve decided to write a few words about how tot use it, only a few as here there&amp;#8217;s nothing more to write. Mainly because actually the SQL proxy is used like the other ST proxies except that it needs an override.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;App.model.MyModel&#39;, {
+    extend: &#39;Ext.data.Model&#39;,
+
+    config: {
+        proxy: {
+            type: &#39;sql&#39;
+        }
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The only custom configuration is to include the following override of the default method &lt;code&gt;getDatabaseObject&lt;/code&gt; which has platform detection (only for iOS, but should be easy to add for Android too): if is not simulator and it&amp;#8217;s a web view then open the database trough Phonegap plugin &lt;code&gt;sqlitePlugin&lt;/code&gt;, else open it trough overridden method, thus the WebSQL &lt;code&gt;openDatabase&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;Ext.define(&#39;Ext.data.proxy.SQLOverride&#39;, {
+    override: &#39;Ext.data.proxy.SQL&#39;,
+
+/* //Overridden method
+    getDatabaseObject: function() {
+        return openDatabase(this.getDatabase(), &#39;1.0&#39;, &#39;Sencha Database&#39;, 5 * 1024 * 1024);
+    }
+*/
+    getDatabaseObject: function() {
+        var isWebView = false;
+
+        if(Ext.os.is.Android){
+            isWebView = /AppName/i.test(navigator.userAgent);
+        }
+        else
+        if (Ext.os.is.iOS &amp;amp;&amp;amp; !/simulator/i.test(navigator.platform)) {
+            isWebView = /(iPhone|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
+        }
+
+        return isWebView ? sqlitePlugin.openDatabase(&amp;quot;data.sqlite&amp;quot;) : this.callParent();
+    }
+ });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can find the Phonegap plugin on github: &lt;a href=&#34;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&#34; title=&#34;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&#34;&gt;https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Also you can check this &lt;a href=&#34;http://druckit.wordpress.com/2013/04/02/revisiting-the-sencha-touch-2-2-sql-proxy/&#34;&gt;blog post&lt;/a&gt; for a nice cover.&lt;/p&gt;
+
+&lt;h4 id=&#34;edit-25-03-2013&#34;&gt;&lt;strong&gt;EDIT(25.03.2013):&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;Edited this post to add Android part. In the override just replaced the code of the &lt;em&gt;getDatabaseObject&lt;/em&gt;. And with the default user agent is impossible to indetify if it&amp;#8217;s a WebView or a browser. To overcome this, in case if you are on Phonegap, as I was, just set you user agent like following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;@Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        super.appView.getSettings().setUserAgentString(
+        	    super.appView.getSettings().getUserAgentString()
+        	    + &amp;quot; &amp;quot;
+        	    + getString(R.string.app_name));
+
+        super.loadUrl(Config.getStartUrl());
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

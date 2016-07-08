@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Popup on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/popup/</link>
+    <description>Recent content in Popup on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Fri, 24 Jan 2014 17:50:16 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/popup/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Onblur like for a div in AngularJS to close a popup</title>
+      <link>http://vadimpopa.com/onblur-like-for-a-div-in-angularjs-to-close-a-popup/</link>
+      <pubDate>Fri, 24 Jan 2014 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/onblur-like-for-a-div-in-angularjs-to-close-a-popup/</guid>
+      <description>&lt;p&gt;Often is needed to close a popup when the user clicks anywhere else in the page but not on popup. There are many workarounds for such functionality, including one of the simplest which is to give to the &lt;code&gt;div&lt;/code&gt; the &lt;code&gt;tabindex&lt;/code&gt; attribute and use &lt;code&gt;onblur&lt;/code&gt; event.&lt;/p&gt;
+
+&lt;p&gt;But &lt;code&gt;onblur&lt;/code&gt; wasn&amp;rsquo;t suitable for me because is fired only if the popup have got the focus, and the user may want to close that popup without giving the focus to it.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;html&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div tabindex=&amp;quot;-1&amp;quot; onblur=&amp;quot;closeMyPopup()&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;AngularJS&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div class=&amp;quot;popup&amp;quot; tabindex=&amp;quot;-1&amp;quot; data-ng-show=&amp;quot;form.popups.myPopup&amp;quot; data-ui-event=&amp;quot;{ blur : &#39;closeMyPopup()&#39;}&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So I&amp;rsquo;ve coded a very simple AngularJS directive which evaluates an expression on the containing scope when the dom click event is triggered and the target is not a child of that popup:&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;app.directive(&amp;quot;outsideClick&amp;quot;, [&#39;$document&#39;,&#39;$parse&#39;, function( $document, $parse ){
+    return {
+        link: function( $scope, $element, $attributes ){
+            var scopeExpression = $attributes.outsideClick,
+                onDocumentClick = function(event){
+                    var isChild = $element.find(event.target).length &amp;gt; 0;
+
+                    if(!isChild) {
+                        $scope.$apply(scopeExpression);
+                    }
+                };
+
+            $document.on(&amp;quot;click&amp;quot;, onDocumentClick);
+
+            $element.on(&#39;$destroy&#39;, function() {
+                $document.off(&amp;quot;click&amp;quot;, onDocumentClick);
+            });
+        }
+    }
+}]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And simply to use:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div class=&amp;quot;popup&amp;quot; data-ng-show=&amp;quot;form.popups.myPopup&amp;quot; outside-click=&amp;quot;closeMyPopup()&amp;quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

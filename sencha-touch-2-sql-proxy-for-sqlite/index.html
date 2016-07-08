@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="Hugo 0.16" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Open+Sans|Marcellus+SC'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/solarized_dark.min.css">
+    <link rel="stylesheet" href="http://vadimpopa.com/css/styles.css">
+    <link rel="stylesheet" href="http://vadimpopa.com/css/custom.css">
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="http://vadimpopa.com//index.xml">
+
+    
+    <title> Sencha Touch 2 SQL proxy for SQLite - All the things about web and javascript</title>
+    <meta property='og:title' content=" Sencha Touch 2 SQL proxy for SQLite - All the things about web and javascript">
+    <meta property="og:type" content="article">
+    
+
+    <meta property="og:url" content="http://vadimpopa.com/sencha-touch-2-sql-proxy-for-sqlite/">
+    <meta name="description" content="Sencha Touch 2 SQL proxy for SQLite">
+    
+
+  </head>
+
+  <body>
+
+    <header class="site">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://vadimpopa.com/">All the things about web and javascript</a>
+          </div>
+
+          <div id="navbar" class="collapse navbar-collapse">
+            
+          </div>
+
+        </div>
+      </nav>
+    </header>
+
+    <div class="site">
+      <div class="container">
+
+
+
+<div class="single">
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <article class="single" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+        <meta itemprop="mainEntityOfPage"  itemType="https://schema.org/WebPage" content="http://vadimpopa.com/"/>
+        <meta itemprop="dateModified" content="2013-03-03T21:12:06&#43;03:00">
+        <meta itemprop="headline" content=" Sencha Touch 2 SQL proxy for SQLite">
+        <meta itemprop="description" content="Surfing Sencha forums day by day I&#8217;ve come to the conclusion that today many Sencha Touch 2 users still don&#8217;t know about the nice and well written SQL proxy (Ext.data.proxy.Sql). Instead of it they use other extensions written by ST users which are easy to find on ST forum. But the default ST proxy also can by used for WebSQL or SQLite with Phonegap plugin and comparing with those extensions has a well written code, is more faster and is part of ST2.
+
+Saying this I&#8217;ve decided to write a few words about how tot use it, only a few as here there&#8217;s nothing more to write. Mainly because actually the SQL proxy is used like the other ST proxies except that it needs an override.
+">
+        <meta itemprop="url" content="http://vadimpopa.com/sencha-touch-2-sql-proxy-for-sqlite/">
+        <div itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+          <meta itemprop="url" content="http://vadimpopa.com/images/default.jpg" />
+          <meta itemprop="width" content="800">
+          <meta itemprop="height" content="800">
+        </div>
+        <div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+          <div itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">
+            <meta itemprop="url" content="http://vadimpopa.com/images/logo.jpg">
+            <meta itemprop="width" content="100">
+            <meta itemprop="height" content="100">
+          </div>
+          <meta itemprop="name" content="All the things about web and javascript">
+        </div>
+        <div itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <meta itemprop="name" content="Vadim Popa">
+        </div>
+
+        <header class="article-header">
+          <time itemprop="datePublished" pubdate="pubdate" datetime="2013-03-03T21:12:06&#43;03:00">Sun, Mar 3, 2013</time>
+          <h1 class="article-title"> Sencha Touch 2 SQL proxy for SQLite</h1>
+        </header>
+
+        <div class="article-body" itemprop="articleBody">
+          
+
+<p>Surfing Sencha forums day by day I&#8217;ve come to the conclusion that today many Sencha Touch 2 users still don&#8217;t know about the nice and well written SQL proxy (<code>Ext.data.proxy.Sql</code>). Instead of it they use other extensions written by ST users which are easy to find on ST forum. But the default ST proxy also can by used for WebSQL or SQLite with Phonegap plugin and comparing with those extensions has a well written code, is more faster and is part of ST2.</p>
+
+<p>Saying this I&#8217;ve decided to write a few words about how tot use it, only a few as here there&#8217;s nothing more to write. Mainly because actually the SQL proxy is used like the other ST proxies except that it needs an override.</p>
+
+<pre><code class="language-javascript">Ext.define('App.model.MyModel', {
+    extend: 'Ext.data.Model',
+
+    config: {
+        proxy: {
+            type: 'sql'
+        }
+    }
+});
+</code></pre>
+
+<p>The only custom configuration is to include the following override of the default method <code>getDatabaseObject</code> which has platform detection (only for iOS, but should be easy to add for Android too): if is not simulator and it&#8217;s a web view then open the database trough Phonegap plugin <code>sqlitePlugin</code>, else open it trough overridden method, thus the WebSQL <code>openDatabase</code>.</p>
+
+<pre><code class="language-javascript">Ext.define('Ext.data.proxy.SQLOverride', {
+    override: 'Ext.data.proxy.SQL',
+
+/* //Overridden method
+    getDatabaseObject: function() {
+        return openDatabase(this.getDatabase(), '1.0', 'Sencha Database', 5 * 1024 * 1024);
+    }
+*/
+    getDatabaseObject: function() {
+        var isWebView = false;
+
+        if(Ext.os.is.Android){
+            isWebView = /AppName/i.test(navigator.userAgent);
+        }
+        else
+        if (Ext.os.is.iOS &amp;&amp; !/simulator/i.test(navigator.platform)) {
+            isWebView = /(iPhone|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
+        }
+
+        return isWebView ? sqlitePlugin.openDatabase(&quot;data.sqlite&quot;) : this.callParent();
+    }
+ });
+</code></pre>
+
+<p>You can find the Phonegap plugin on github: <a href="https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS" title="https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS">https://github.com/brodyspark/PhoneGap-sqlitePlugin-iOS</a></p>
+
+<p>Also you can check this <a href="http://druckit.wordpress.com/2013/04/02/revisiting-the-sencha-touch-2-2-sql-proxy/">blog post</a> for a nice cover.</p>
+
+<h4 id="edit-25-03-2013"><strong>EDIT(25.03.2013):</strong></h4>
+
+<p>Edited this post to add Android part. In the override just replaced the code of the <em>getDatabaseObject</em>. And with the default user agent is impossible to indetify if it&#8217;s a WebView or a browser. To overcome this, in case if you are on Phonegap, as I was, just set you user agent like following:</p>
+
+<pre><code class="language-javascript">@Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        super.appView.getSettings().setUserAgentString(
+        	    super.appView.getSettings().getUserAgentString()
+        	    + &quot; &quot;
+        	    + getString(R.string.app_name));
+
+        super.loadUrl(Config.getStartUrl());
+    }
+}
+</code></pre>
+
+        </div>
+
+
+        <aside>
+          <div class="section"><a href="http://vadimpopa.com/tags/proxy" class="tag">proxy</a> <a href="http://vadimpopa.com/tags/controller" class="tag">controller</a> <a href="http://vadimpopa.com/tags/sencha%20touch%202" class="tag">sencha touch 2</a> <a href="http://vadimpopa.com/tags/SQLite" class="tag">SQLite</a> </div>
+
+          <div class="section share">
+            <a href="http://www.facebook.com/sharer.php?src=bm&u=http%3a%2f%2fvadimpopa.com%2fsencha-touch-2-sql-proxy-for-sqlite%2f&t=%20Sencha%20Touch%202%20SQL%20proxy%20for%20SQLite" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-facebook"></i></a>
+            <a href="http://twitter.com/intent/tweet?url=http%3a%2f%2fvadimpopa.com%2fsencha-touch-2-sql-proxy-for-sqlite%2f&text=%20Sencha%20Touch%202%20SQL%20proxy%20for%20SQLite&tw_p=tweetbutton" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-twitter"></i></a>
+            <a href="https://plus.google.com/share?url=http%3a%2f%2fvadimpopa.com%2fsencha-touch-2-sql-proxy-for-sqlite%2f" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-google-plus"></i></a>
+            <a href="http://getpocket.com/edit?url=http%3a%2f%2fvadimpopa.com%2fsencha-touch-2-sql-proxy-for-sqlite%2f&title=%20Sencha%20Touch%202%20SQL%20proxy%20for%20SQLite" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-get-pocket"></i></a>
+          </div>
+
+          
+          
+          <div class="section">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  var disqus_shortname = 'vadimpopacom';
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+          
+          
+        </aside>
+
+      </article>
+
+    </div>
+    <div class="col-md-4">
+      
+<aside class="site">
+<section class="even">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">found on</h2>
+    </div>
+    <div class="found-on-list">
+      <a href="mailto:vadimvpopa@gmail.com" rel="tooltip" title="vadimvpopa@gmail.com"><i class="fa fa-envelope-o"></i></a>
+      <a href="https://twitter.com/vadimvpopa" rel="tooltip" title="twitter"><i class="fa fa-twitter"></i></a>
+      <a href="https://github.com/vadimpopa/" rel="tooltip" title="github"><i class="fa fa-github"></i></a>
+      <a href="http://www.linkedin.com/in/vadimpopa" rel="tooltip" title="linkedin"><i class="fa fa-linkedin"></i></a>
+    </div>
+  </div>
+</section>
+
+
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">category</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/categories/javascript" class="list-group-item">javascript</a>
+      
+      <a href="http://vadimpopa.com/categories/extjs-4" class="list-group-item">extjs-4</a>
+      
+      <a href="http://vadimpopa.com/categories/angularjs1" class="list-group-item">angularjs1</a>
+      
+      <a href="http://vadimpopa.com/categories/charts" class="list-group-item">charts</a>
+      
+      <a href="http://vadimpopa.com/categories/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
+      
+      <a href="http://vadimpopa.com/categories/mobile" class="list-group-item">mobile</a>
+      
+      <a href="http://vadimpopa.com/categories/blog" class="list-group-item">blog</a>
+      
+      <a href="http://vadimpopa.com/categories/d3js" class="list-group-item">d3js</a>
+      
+      <a href="http://vadimpopa.com/categories/github-pages" class="list-group-item">github-pages</a>
+      
+      <a href="http://vadimpopa.com/categories/nvd3" class="list-group-item">nvd3</a>
+      
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">tag</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/tags/javascript" class="list-group-item">javascript</a>
+      
+      <a href="http://vadimpopa.com/tags/extjs4" class="list-group-item">extjs4</a>
+      
+      <a href="http://vadimpopa.com/tags/angularjs" class="list-group-item">angularjs</a>
+      
+      <a href="http://vadimpopa.com/tags/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
+      
+      <a href="http://vadimpopa.com/tags/charts" class="list-group-item">charts</a>
+      
+      <a href="http://vadimpopa.com/tags/controller" class="list-group-item">controller</a>
+      
+      <a href="http://vadimpopa.com/tags/directive" class="list-group-item">directive</a>
+      
+      <a href="http://vadimpopa.com/tags/extjs" class="list-group-item">extjs</a>
+      
+      <a href="http://vadimpopa.com/tags/mobile" class="list-group-item">mobile</a>
+      
+      <a href="http://vadimpopa.com/tags/sprite" class="list-group-item">sprite</a>
+      
+    </div>
+  </div>
+  
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent posts</h2>
+    </div>
+    <div class="list-group">
+      
+      <a href="http://vadimpopa.com/sencha-viewmodel-tips/" class="list-group-item">Sencha ViewModel Tips</a>
+      
+      <a href="http://vadimpopa.com/compile-can-boost-your-directives/" class="list-group-item">Compile can boost your directives</a>
+      
+      <a href="http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/" class="list-group-item">Split large AngularJS Controllers using the Mixin Pattern</a>
+      
+      <a href="http://vadimpopa.com/new-year-and-new-blog-powered-by-octopress-and-github-pages/" class="list-group-item">New year and new blog powered by Octopress and Github Pages</a>
+      
+      <a href="http://vadimpopa.com/onblur-like-for-a-div-in-angularjs-to-close-a-popup/" class="list-group-item">Onblur like for a div in AngularJS to close a popup</a>
+      
+      <a href="http://vadimpopa.com/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/" class="list-group-item">First thoughts about AngularJS from an ExtJS developer perspective</a>
+      
+      <a href="http://vadimpopa.com/how-to-add-svg-patterns-in-your-extjs-4-2-1-apps/" class="list-group-item">How to add SVG patterns in your ExtJS 4.2.1 apps</a>
+      
+      <a href="http://vadimpopa.com/how-to-add-custom-sprites-in-extjs-charts/" class="list-group-item">How to add custom sprites in ExtJS charts</a>
+      
+      <a href="http://vadimpopa.com/nvd3-and-raphael-as-alternative-charting-libs-for-sencha-touch/" class="list-group-item">NVD3 and Raphael as alternative charting libs for Sencha Touch</a>
+      
+      <a href="http://vadimpopa.com/mobile-hardware-acceleration-and-sencha-touch-with-phonegap-considerations/" class="list-group-item">Sencha ViewModel Tips</a>
+      
+    </div>
+  </div>
+  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2 class="panel-title">recent comments</h2>
+    </div>
+      <div id="dsq-recentcomments" class="dsq-widget"><script type="text/javascript" src="http://disqus.com/forums/vadimpopacom/recent_comments_widget.js?hide_avatars=1"></script></div>
+  </div>
+</aside>
+
+
+    </div>
+  </div>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site">
+      <div class="container">
+        <p>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</p>
+        <p>Powered by <a href="http://gohugo.io" target="_blank" rel="nofollow">Hugo</a></p>
+      </div>
+    </footer>
+
+    <script src="//code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-36108032-2', 'auto');
+    ga('send', 'pageview');
+    </script>
+    
+
+  </body>
+</html>
+

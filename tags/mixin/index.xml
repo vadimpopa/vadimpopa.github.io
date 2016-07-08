@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mixin on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/mixin/</link>
+    <description>Recent content in Mixin on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Sun, 02 Mar 2014 21:12:06 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/mixin/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Split large AngularJS Controllers using the Mixin Pattern</title>
+      <link>http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/</link>
+      <pubDate>Sun, 02 Mar 2014 21:12:06 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/</guid>
+      <description>&lt;p&gt;In case if your controller became too large and the inheritance is not a solution, the Mixin pattern can solve this problem very easy by splitting the logic in mixins each serving a functionality or a feature. Within AngularJS I found a easy to do it by using the &lt;code&gt;$controller&lt;/code&gt; service.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//AngularJS Mixin
+app.controller(&#39;CanSingController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	$scope.sing = function() {
+	         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+	    };
+    }
+]);
+
+
+app.controller(&#39;MusicianController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	var canSingCtrl = $controller(&#39;CanSingController&#39;,{$scope: $scope});
+
+    	$scope.whatMusicianCanDo = function() {
+
+    		//Call locally, or best call sing in your view
+    		$scope.sing();
+    	};
+    }
+]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For fun and comparation I brought also an ExtJS example found in its &lt;a href=&#34;http://docs.sencha.com/extjs/4.2.2/#!/api/Ext.Class-cfg-mixins&#34; title=&#34;http://docs.sencha.com/extjs/4.2.2/#!/api/Ext.Class-cfg-mixins&#34;&gt;documentation&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//ExtJS Mixin
+Ext.define(&#39;CanSing&#39;, {
+     sing: function() {
+         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+     }
+});
+
+Ext.define(&#39;Musician&#39;, {
+     mixins: [&#39;CanSing&#39;]
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So the &lt;code&gt;Musician&lt;/code&gt; will get a &lt;code&gt;sing&lt;/code&gt; method from &lt;code&gt;CanSing&lt;/code&gt; &lt;code&gt;controller&lt;/code&gt;/&lt;code&gt;mixin&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If to raise same issue from ExtJS&amp;rsquo;s documentation: &lt;em&gt;what if the Musician already has a sing method? Or you want to mix in two classes, both of which define sing?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In AngularJS this can be solved by defining the &lt;code&gt;sing&lt;/code&gt; method in the instantiated mixin, and use an identifier or a local variable within the parent controller to keep that instance:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//AngularJS Mixin without overriding
+app.controller(&#39;CanSingController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+
+	    return {
+	    	sing: function() {
+		         alert(&amp;quot;I&#39;m on the highway to hell...&amp;quot;)
+		    }
+	    }
+    }
+]);
+
+app.controller(&#39;MusicianController&#39;, [&#39;$scope&#39;
+    function ($scope) {
+    	var canSing = $controller(&#39;CanSingController as canSing&#39;,{$scope: $scope}),
+
+    	$scope.sing = function() {
+
+    		// call trough the local variable
+    		canSing.sing();	
+
+    		//call trough the indentifier
+    		$scope.canSing.sing();
+    	}
+    }
+]);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Usually I define within the &lt;code&gt;$scope&lt;/code&gt; the methods which are going to be exposed in views and in the instance the ones which will be called locally in the parent controller. This way I preserve a sort of encapsulation and also looks cleaner. But when defining wihtin the &lt;code&gt;$scope&lt;/code&gt; just make sure not to have overrides. To avoid them you could just use the &lt;code&gt;identifier&lt;/code&gt; approach which in some way also gives sort of encapsulation of all methods within one property.&lt;/p&gt;
+
+&lt;p&gt;In ExtJS: &lt;em&gt;it&amp;rsquo;s good to define mixins as an object, where you assign a name to each mixin. In this case the sing method of &lt;code&gt;Musician&lt;/code&gt; will overwrite the mixed in &lt;code&gt;sing&lt;/code&gt; method. But you can access the original mixed in method through special mixins property.&lt;/em&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;//ExtJS Mixin without overriding
+Ext.define(&#39;Musician&#39;, {
+     mixins: {
+         canSing: &#39;CanSing&#39;
+     },
+
+     sing: function() {
+         // delegate singing operation to mixin
+         this.mixins.canSing.sing.call(this);
+     }
+})
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
