@@ -1,6 +1,6 @@
 +++
 date = "2013-04-29T17:50:16+03:00"
-title = "Sencha ViewModel Tips"
+title = "Mobile hardware acceleration and sencha touch with phonegap considerations"
 description = ""
 tags = [
     "mobile",
