@@ -2,6 +2,7 @@
 date = "2014-01-24T17:50:16+03:00"
 title = "Onblur like for a div in AngularJS to close a popup"
 description = "I've coded a very simple AngularJS directive to close a popup when the user clicks anywhere else in the page but not on popup"
+permalink = "onblur-like-for-a-div-in-angularjs-to-close-a-popup"
 tags = [
     "angularjs",
     "directive",
