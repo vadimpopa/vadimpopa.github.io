@@ -7,8 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
-    <lastBuildDate>Wed, 06 Jul 2016 17:50:16 +0300</lastBuildDate>
+    <lastBuildDate>Fri, 05 Aug 2016 17:17:49 +0300</lastBuildDate>
     <atom:link href="http://vadimpopa.com/categories/sencha/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Lazy loading Components with ComponentLoader</title>
+      <link>http://vadimpopa.com/lazy-loading-components-with-componentloader/</link>
+      <pubDate>Fri, 05 Aug 2016 17:17:49 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/lazy-loading-components-with-componentloader/</guid>
+      <description>&lt;p&gt;Check out my post &lt;a href=&#34;http://moduscreate.com/lazy-loading-components-with-componentloader/&#34; target=&#34;_blank&#34;&gt;Lazy Loading Components with ComponentLoader&lt;/a&gt; on &lt;a href=&#34;http://moduscreate.com&#34; target=&#34;_blank&#34;&gt;ModusCreate&lt;/a&gt; to find out how to use Sencha &lt;code&gt;ComponentLoader&lt;/code&gt; to build lazy loading Components.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Sencha ViewModel Tips</title>
