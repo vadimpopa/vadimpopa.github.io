@@ -14,13 +14,13 @@
     <link rel="alternate" type="application/rss+xml" title="RSS" href="http://vadimpopa.com//index.xml">
 
     
-    <title>Compile can boost your directives - All the things about web and javascript</title>
-    <meta property='og:title' content="Compile can boost your directives - All the things about web and javascript">
+    <title>Using Sencha Ext.Config - All the things about web and javascript</title>
+    <meta property='og:title' content="Using Sencha Ext.Config - All the things about web and javascript">
     <meta property="og:type" content="article">
     
 
-    <meta property="og:url" content="http://vadimpopa.com/compile-can-boost-your-directives/">
-    <meta name="description" content="Use whenever you can [compile] to boost your Angular directives and get rid of whatchers">
+    <meta property="og:url" content="http://vadimpopa.com/using-sencha-ext-config/">
+    <meta name="description" content="Vadim Popa explains on sencha.com/blog how to use the latest features of Ext.Config added in ExtJS 6">
     
 
   </head>
@@ -61,12 +61,10 @@
       <article class="single" itemscope="itemscope" itemtype="http://schema.org/Article">
 
         <meta itemprop="mainEntityOfPage"  itemType="https://schema.org/WebPage" content="http://vadimpopa.com/"/>
-        <meta itemprop="dateModified" content="2015-02-01T22:59:32&#43;03:00">
-        <meta itemprop="headline" content="Compile can boost your directives">
-        <meta itemprop="description" content="
-Use whenever you can compile to boost your Angular directives and get rid of whatchers. For instance we have a directive which acts as a data row in a ngRepeat, like a grid row. Only besides the trivial columns this row has some action buttons.
-">
-        <meta itemprop="url" content="http://vadimpopa.com/compile-can-boost-your-directives/">
+        <meta itemprop="dateModified" content="2016-08-11T11:53:43&#43;03:00">
+        <meta itemprop="headline" content="Using Sencha Ext.Config">
+        <meta itemprop="description" content="Check out my post Using Sencha Ext.Config on Sencha blog to find out more about the new Ext.Config features that are available in ExtJS 6.">
+        <meta itemprop="url" content="http://vadimpopa.com/using-sencha-ext-config/">
         <div itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
           <meta itemprop="url" content="http://vadimpopa.com/images/default.jpg" />
           <meta itemprop="width" content="800">
@@ -85,102 +83,24 @@ Use whenever you can compile to boost your Angular directives and get rid of wha
         </div>
 
         <header class="article-header">
-          <time itemprop="datePublished" pubdate="pubdate" datetime="2015-02-01T22:59:32&#43;03:00">Sun, Feb 1, 2015</time>
-          <h1 class="article-title">Compile can boost your directives</h1>
+          <time itemprop="datePublished" pubdate="pubdate" datetime="2016-08-11T11:53:43&#43;03:00">Thu, Aug 11, 2016</time>
+          <h1 class="article-title">Using Sencha Ext.Config</h1>
         </header>
 
         <div class="article-body" itemprop="articleBody">
-          <p><img class="right" src="../../images/rocket.png" style="display: block;margin: 0 auto; width:150px;height:150px;">
-Use whenever you can <a href="https://github.com/angular/angular.js/wiki/Understanding-Directives">compile</a> to boost your Angular directives and get rid of whatchers. For instance we have a <code>directive</code> which acts as a data row in a <code>ngRepeat</code>, like a grid row. Only besides the trivial columns this row has some action buttons.</p>
-
-<pre><code class="language-html">&lt;!--myDataRow.tpl.html--&gt;
-&lt;div class=&quot;my-data-row&quot; ng-class=&quot;{ 'my-data-row-selected': row.isSelected }&quot; layout=&quot;row&quot;&gt;
-    &lt;span class=&quot;my-data-row-name&quot;&gt;
-      &lt;a class=&quot;my-data-row-id&quot; href=&quot;&quot;&gt;{{ row.id }}&lt;/a&gt;
-      &lt;span&gt;{{ row.name }}&lt;/span&gt;
-    &lt;/span&gt;
-    &lt;span class=&quot;my-data-row-actions&quot; flex&gt;
-      &lt;i ng-show=&quot;canCommentAction&quot; class=&quot;my-data-row-actions-comment icon&quot; ng-click=&quot;commentOnEntity($event)&quot;&gt;&lt;/i&gt;
-      &lt;i ng-show=&quot;canDeleteAction&quot; class=&quot;my-data-row-actions-delete icon&quot; ng-click=&quot;deleteEntity($event)&quot;&gt;&lt;/i&gt;
-      &lt;i class=&quot;icon&quot;&gt;&lt;/i&gt;
-    &lt;/span&gt;
-&lt;/div&gt;
-</code></pre>
-
-<pre><code class="language-javascript">function myDataRowDirective() {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: 'directives/myDataRow/myDataRow.tpl.html',
-        scope: {
-            row: '=',
-            onDelete: '&amp;?',
-            onComment: '&amp;?'
-        },
-        link: myDataRowLink
-    };
-}
-
-function myDataRowLink(scope, element, attrs) {
-  //the ngShow flags are defined for the row actions
-    scope.canDeleteAction = attrs.onDelete;
-    scope.canCommentAction = attrs.onComment;
-}
-</code></pre>
-
-<pre><code class="language-html">&lt;!--Use of myDataRow--&gt;
- &lt;my-data-row
-      on-delete=&quot;stories.deleteStory(story, $event)&quot;
-      on-comment=&quot;stories.commentOnStory(story, $event)&quot;
-      ng-repeat=&quot;story in stories.userStories | filter: stories.searchUserStories | filter: stories.filterUserStoriesObj | orderBy: 'index' track by story.id&quot;
-      row=&quot;story&quot;&gt;
-&lt;/my-data-row&gt;
-</code></pre>
-
-<p>Everything is fine, the directive works ok. But once the view gets heavy and has a lot of rows to show the user encounters slow responsiveness. The reasons may be beacause of the digest(sometimes running form <code>rootScope</code>) cycle which runs trough many watchers. In an AngularJS app you can see whatchers everywhere including in <a href="https://github.com/angular/angular.js/blob/master/src/ng/directive/ngShowHide.js">ngShows</a>  used within above template. Having them in a directive within an <code>ngRepeat</code> adds more overhead to responsivness.</p>
-
-<p>Here comes <code>compile</code> which gets rid of whatchers. Instead of checking whether to show or not the action buttons in the <code>link</code> function, do it in <code>compile</code>. This way the directive gets rid of 2 <code>ngShows</code> and at the same time of 2 <code>whatchers</code>:</p>
-
-<pre><code class="language-javascript">// myDataRowDirective optimized
-function myDataRowDirective() {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: 'directives/myDataRow/myDataRow.tpl.html',
-        scope: {
-            row: '=',
-            onDelete: '&amp;?',
-            onComment: '&amp;?'
-        },
-        compile: myDataRowCompile
-    };
-}
-
-function myDataRowCompile(tElement, tAttrs) {
-    if (!tAttrs.onDelete) {
-        tElement.find('.my-data-row-actions-delete').remove();
-    }
-    if (!tAttrs.onComment) {
-        tElement.find('.my-data-row-actions-comment').remove();
-    }
-}
-</code></pre>
-
-<p>In the end would like to suggest you to read this stackoverflow <a href="http://stackoverflow.com/questions/12164138/what-is-the-difference-between-compile-and-link-function-in-angularjs">thread</a> which references a few examples of when and how to use <code>compile</code> instead of <code>link</code>.</p>
-
-<p>Happy 2015 coding !</p>
+          <p>Check out my post <a href="https://www.sencha.com/blog/using-sencha-ext-config/" target="_blank">Using Sencha Ext.Config</a> on <a href="http://sencha.com" target="_blank">Sencha</a> blog to find out more about the new Ext.Config features that are available in ExtJS 6.</p>
 
         </div>
 
 
         <aside>
-          <div class="section"><a href="http://vadimpopa.com/tags/javascript" class="tag">javascript</a> <a href="http://vadimpopa.com/tags/angularjs" class="tag">angularjs</a> <a href="http://vadimpopa.com/tags/directive" class="tag">directive</a> <a href="http://vadimpopa.com/tags/compile" class="tag">compile</a> <a href="http://vadimpopa.com/tags/link" class="tag">link</a> </div>
+          <div class="section"><a href="http://vadimpopa.com/tags/javascript" class="tag">javascript</a> <a href="http://vadimpopa.com/tags/sencha" class="tag">sencha</a> <a href="http://vadimpopa.com/tags/extjs" class="tag">extjs</a> <a href="http://vadimpopa.com/tags/configs" class="tag">configs</a> </div>
 
           <div class="section share">
-            <a href="http://www.facebook.com/sharer.php?src=bm&u=http%3a%2f%2fvadimpopa.com%2fcompile-can-boost-your-directives%2f&t=Compile%20can%20boost%20your%20directives" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-facebook"></i></a>
-            <a href="http://twitter.com/intent/tweet?url=http%3a%2f%2fvadimpopa.com%2fcompile-can-boost-your-directives%2f&text=Compile%20can%20boost%20your%20directives&tw_p=tweetbutton" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-twitter"></i></a>
-            <a href="https://plus.google.com/share?url=http%3a%2f%2fvadimpopa.com%2fcompile-can-boost-your-directives%2f" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-google-plus"></i></a>
-            <a href="http://getpocket.com/edit?url=http%3a%2f%2fvadimpopa.com%2fcompile-can-boost-your-directives%2f&title=Compile%20can%20boost%20your%20directives" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-get-pocket"></i></a>
+            <a href="http://www.facebook.com/sharer.php?src=bm&u=http%3a%2f%2fvadimpopa.com%2fusing-sencha-ext-config%2f&t=Using%20Sencha%20Ext.Config" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-facebook"></i></a>
+            <a href="http://twitter.com/intent/tweet?url=http%3a%2f%2fvadimpopa.com%2fusing-sencha-ext-config%2f&text=Using%20Sencha%20Ext.Config&tw_p=tweetbutton" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-twitter"></i></a>
+            <a href="https://plus.google.com/share?url=http%3a%2f%2fvadimpopa.com%2fusing-sencha-ext-config%2f" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-google-plus"></i></a>
+            <a href="http://getpocket.com/edit?url=http%3a%2f%2fvadimpopa.com%2fusing-sencha-ext-config%2f&title=Using%20Sencha%20Ext.Config" onclick="window.open(this.href, 'PCwindow', 'width=550, height=350, menubar=no, toolbar=no, scrollbars=yes'); return false;"><i class="fa fa-get-pocket"></i></a>
           </div>
 
           
