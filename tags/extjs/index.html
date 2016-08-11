@@ -104,6 +104,23 @@
       
       <article class="li">
   <header>
+    <div class="date">Sun, Mar 2, 2014</div>
+    <div class="title"><a href="http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/">Split large AngularJS Controllers using the Mixin Pattern</a></div>
+  </header>
+  <div class="body"><p>In case if your controller became too large and the inheritance is not a solution, the Mixin pattern can solve this problem very easy by splitting the logic in mixins each serving a functionality or a feature. Within AngularJS I found a easy to do it by using the <code>$controller</code> service.</p>
+</div>
+
+  
+  <footer>
+    <a href="http://vadimpopa.com/split-large-angularjs-controllers-using-the-mixin-pattern/" class="btn btn-default">Read More…</a>
+  </footer>
+  
+</article>
+<hr>
+
+      
+      <article class="li">
+  <header>
     <div class="date">Fri, Nov 22, 2013</div>
     <div class="title"><a href="http://vadimpopa.com/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/">First thoughts about AngularJS from an ExtJS developer perspective</a></div>
   </header>
@@ -113,6 +130,39 @@
   
   <footer>
     <a href="http://vadimpopa.com/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/" class="btn btn-default">Read More…</a>
+  </footer>
+  
+</article>
+<hr>
+
+      
+      <article class="li">
+  <header>
+    <div class="date">Tue, Apr 2, 2013</div>
+    <div class="title"><a href="http://vadimpopa.com/aymap-part-2/">Inside Aymap, an ExtJS4 web application, part 2</a></div>
+  </header>
+  <div class="body">In this post will continue Aymap views exploration and share with you some extension tips and tricks that I&#8217;ve used and I think might be useful for you too in writing your ExtJS4 web application. AyToolbox If to look in previous part at AyToolbox you can see that contains 5 items of toolboxpanel xtype. This widget does the job for 5 views and has the following define: Ext.define('AyMap.view.toolbox.Panel',{ extend : 'Ext.grid.Panel', // More configs initComponent: function(){ var me = this, store; Ext.apply(me,{ // More configs columns: [{ width: 100, sortable: true, dataIndex: 'name' }], listeners: { afterrender: function(view){ view.getPlugin('gridviewdragdrop').dragZone.getDragText = function() { return this.dragData.records[0].get('name') } Ext.create('Ext.tip.ToolTip', { target: view.el, delegate: view.itemSelector, trackMouse: true, renderTo: Ext.getBody(), listeners: { beforeshow: function(tip) { tip.update(this.getRecord(tip.triggerElement).get('name')); }, scope: view } }); } } } }); me.callParent(arguments); store = me.getStore(); store.guaranteeRange(0, store.pageSize-1); } }); Note the best approach on how to add tooltips to grid columns trough delegation, which is much performant than using renderers: renderers: function (value, metadata){ metadata.tdAttr = 'data-qtip=&quot; ' + value + '&quot;'; return value; } While working on this class I&#8217;ve learned that if to use ExtJS Models at maximum, you can simplify views configurations.</div>
+
+  
+  <footer>
+    <a href="http://vadimpopa.com/aymap-part-2/" class="btn btn-default">Read More…</a>
+  </footer>
+  
+</article>
+<hr>
+
+      
+      <article class="li">
+  <header>
+    <div class="date">Sat, Mar 9, 2013</div>
+    <div class="title"><a href="http://vadimpopa.com/reload-a-single-record-and-refresh-its-extjs-grid-row/">Reload a single record and refresh its ExtJs grid row</a></div>
+  </header>
+  <div class="body"><p>Just gave the answer to this question on <a title="extjs forum" href="http://www.sencha.com/forum/showthread.php?258228-Reloading-a-single-record-droma-grid" target="_blank">extjs4 forum</a> and decided to post it here too by adding a code example. The answer is very simple: just load the record with the new data from the server by using the static method <code>Ext.data.Model.load(id,config)</code> then in the successful callback update that record, do a commit if you need, then refresh record&#8217;s node. Below the explanation in code form:</p>
+</div>
+
+  
+  <footer>
+    <a href="http://vadimpopa.com/reload-a-single-record-and-refresh-its-extjs-grid-row/" class="btn btn-default">Read More…</a>
   </footer>
   
 </article>
@@ -151,23 +201,23 @@
       
       <a href="http://vadimpopa.com/categories/javascript" class="list-group-item">javascript</a>
       
-      <a href="http://vadimpopa.com/categories/extjs-4" class="list-group-item">extjs-4</a>
+      <a href="http://vadimpopa.com/categories/sencha" class="list-group-item">sencha</a>
       
-      <a href="http://vadimpopa.com/categories/angularjs1" class="list-group-item">angularjs1</a>
+      <a href="http://vadimpopa.com/categories/ext-js" class="list-group-item">ext-js</a>
       
       <a href="http://vadimpopa.com/categories/charts" class="list-group-item">charts</a>
       
-      <a href="http://vadimpopa.com/categories/sencha" class="list-group-item">sencha</a>
+      <a href="http://vadimpopa.com/categories/sencha-touch" class="list-group-item">sencha-touch</a>
       
-      <a href="http://vadimpopa.com/categories/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
+      <a href="http://vadimpopa.com/categories/angularjs" class="list-group-item">angularjs</a>
+      
+      <a href="http://vadimpopa.com/categories/angularjs1" class="list-group-item">angularjs1</a>
       
       <a href="http://vadimpopa.com/categories/mobile" class="list-group-item">mobile</a>
       
       <a href="http://vadimpopa.com/categories/blog" class="list-group-item">blog</a>
       
-      <a href="http://vadimpopa.com/categories/d3js" class="list-group-item">d3js</a>
-      
-      <a href="http://vadimpopa.com/categories/extjs" class="list-group-item">extjs</a>
+      <a href="http://vadimpopa.com/categories/d3-js" class="list-group-item">d3-js</a>
       
     </div>
   </div>
@@ -180,13 +230,15 @@
       
       <a href="http://vadimpopa.com/tags/javascript" class="list-group-item">javascript</a>
       
+      <a href="http://vadimpopa.com/tags/extjs" class="list-group-item">extjs</a>
+      
       <a href="http://vadimpopa.com/tags/extjs4" class="list-group-item">extjs4</a>
       
       <a href="http://vadimpopa.com/tags/angularjs" class="list-group-item">angularjs</a>
       
-      <a href="http://vadimpopa.com/tags/extjs" class="list-group-item">extjs</a>
-      
       <a href="http://vadimpopa.com/tags/sencha" class="list-group-item">sencha</a>
+      
+      <a href="http://vadimpopa.com/tags/extjs6" class="list-group-item">extjs6</a>
       
       <a href="http://vadimpopa.com/tags/sencha-touch-2" class="list-group-item">sencha-touch-2</a>
       
@@ -195,8 +247,6 @@
       <a href="http://vadimpopa.com/tags/controller" class="list-group-item">controller</a>
       
       <a href="http://vadimpopa.com/tags/directive" class="list-group-item">directive</a>
-      
-      <a href="http://vadimpopa.com/tags/mobile" class="list-group-item">mobile</a>
       
     </div>
   </div>

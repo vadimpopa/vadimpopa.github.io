@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Extjs6 on All the things about web and javascript</title>
+    <link>http://vadimpopa.com/tags/extjs6/</link>
+    <description>Recent content in Extjs6 on All the things about web and javascript</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Copyright (c) 2008 - 2014, Vadim Popa; all rights reserved.</copyright>
+    <lastBuildDate>Thu, 11 Aug 2016 11:53:43 +0300</lastBuildDate>
+    <atom:link href="http://vadimpopa.com/tags/extjs6/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Using Sencha Ext.Config</title>
+      <link>http://vadimpopa.com/using-sencha-ext-config/</link>
+      <pubDate>Thu, 11 Aug 2016 11:53:43 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/using-sencha-ext-config/</guid>
+      <description>&lt;p&gt;Check out my post &lt;a href=&#34;https://www.sencha.com/blog/using-sencha-ext-config/&#34; target=&#34;_blank&#34;&gt;Using Sencha Ext.Config&lt;/a&gt; on &lt;a href=&#34;http://sencha.com&#34; target=&#34;_blank&#34;&gt;Sencha&lt;/a&gt; blog to find out more about the new Ext.Config features that are available in ExtJS 6.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Lazy loading Components with ComponentLoader</title>
+      <link>http://vadimpopa.com/lazy-loading-components-with-componentloader/</link>
+      <pubDate>Fri, 05 Aug 2016 17:17:49 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/lazy-loading-components-with-componentloader/</guid>
+      <description>&lt;p&gt;Check out my post &lt;a href=&#34;http://moduscreate.com/lazy-loading-components-with-componentloader/&#34; target=&#34;_blank&#34;&gt;Lazy Loading Components with ComponentLoader&lt;/a&gt; on &lt;a href=&#34;http://moduscreate.com&#34; target=&#34;_blank&#34;&gt;ModusCreate&lt;/a&gt; to find out how to use Sencha &lt;code&gt;ComponentLoader&lt;/code&gt; to build lazy loading Components or Views.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Sencha ViewModel Tips</title>
+      <link>http://vadimpopa.com/sencha-viewmodel-tips/</link>
+      <pubDate>Wed, 06 Jul 2016 17:50:16 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/sencha-viewmodel-tips/</guid>
+      <description>&lt;p&gt;Check out my post &lt;a href=&#34;http://moduscreate.com/sencha-viewmodel-tips/&#34; target=&#34;_blank&#34;&gt;Sencha ViewModel Tips&lt;/a&gt; on &lt;a href=&#34;http://moduscreate.com&#34; target=&#34;_blank&#34;&gt;ModusCreate&lt;/a&gt; blog for great tips. Also you can find the latest &lt;a href=&#34;https://gist.github.com/vadimpopa/fcebedfc2570e6fe197188257e235e01&#34; target=&#34;_blank&#34;&gt;Revision&lt;/a&gt; updated and anytime on my github account (or embedded below). Soon more to come with great ExtJS6 stuff.&lt;/p&gt;
+
+&lt;script type=&#34;text/javascript&#34; src=&#34;http://gist.github.com/fcebedfc2570e6fe197188257e235e01.js&#34;&gt;&lt;/script&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
