@@ -282,6 +282,67 @@ Ext.define(&#39;Musician&#39;, {
     </item>
     
     <item>
+      <title>First thoughts about AngularJS from an ExtJS developer perspective</title>
+      <link>http://vadimpopa.com/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/</link>
+      <pubDate>Fri, 22 Nov 2013 22:59:32 +0300</pubDate>
+      
+      <guid>http://vadimpopa.com/first-thoughts-about-angularjs-from-an-extjs-developer-perspective/</guid>
+      <description>&lt;p&gt;I thought that is time for me to learn something else, something new from the Front-end world just to be on same wave with latest trends and to feed the brain with a different perspective. After all life is all about learning and in doing we learn.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&#34;right&#34; src=&#34;../../images/feelings_about_angularjs_over_time.png&#34; style=&#34;display: block;margin: 0 auto; width:400px;height:300px;&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;I like everything what&amp;#8217;s connected with web apps and lately I&amp;#8217;ve been keeping my eyes on AngularJS. Seeing it&amp;#8217;s growing popularity and that AngularJS advocates a different approach of building web apps, got me intrigued and I&amp;#8217;ve started the learn process. After a week of diving in many resources I&amp;#8217;ve decided to put down some of my thoughts.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Learning curve&lt;/strong&gt;&lt;br /&gt;
+I can agree with this &lt;a href=&#34;http://www.bennadel.com/blog/2439-My-Experience-With-AngularJS-The-Super-heroic-JavaScript-MVW-Framework.htm&#34; title=&#34;http://www.bennadel.com/blog/2439-My-Experience-With-AngularJS-The-Super-heroic-JavaScript-MVW-Framework.htm&#34;&gt;guy&lt;/a&gt;. You get down and up while trying to understand how the core works and you think sometimes that some of the things are easier and faster to achieve with less effort in ExtJS. sometimes the opposite.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Documentation.&lt;/strong&gt;&lt;br /&gt;
+Being indulged by ExtJS&amp;#8217;s good documentation, what I&amp;#8217;ve found on AngularJS made my start not easy. For more resources google is your friend. My search brought to surface a few good posts which I think worths to check:
+&lt;!-- more --&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/14049480/what-are-the-nuances-of-scope-prototypal-prototypical-inheritance-in-angularjs&#34;&gt;http://stackoverflow.com/questions/14049480/what-are-the-nuances-of-scope-prototypal-prototypical-inheritance-in-angularjs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/15666048/angular-js-service-vs-provider-vs-factory&#34;&gt;http://stackoverflow.com/questions/15666048/angular-js-service-vs-provider-vs-factory&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.ng-newsletter.com/posts/&#34;&gt;http://www.ng-newsletter.com/posts/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://pluralsight.com/training/Courses/TableOfContents/angularjs-fundamentals&#34;&gt;http://pluralsight.com/training/Courses/TableOfContents/angularjs-fundamentals&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;First experiment and thoughts&lt;/strong&gt;&lt;br /&gt;
+Ended up with a &lt;a title=&#34;http://plnkr.co/edit/61rmik&#34; href=&#34;http://plnkr.co/edit/61rmik&#34; target=&#34;_blank&#34;&gt;simple directive&lt;/a&gt; analog to the &lt;a title=&#34;https://github.com/vadimpopa/Ux.field.Multiselect&#34; href=&#34;https://github.com/vadimpopa/Ux.field.Multiselect&#34; target=&#34;_blank&#34;&gt;multiselectfield&lt;/a&gt; Sencha Touch component I built a few months ago. The implementation wasn&amp;#8217;t smooth and intuitive. Had to make some debugging and reread some resource to understand how scopes work in AngularJS for directives, parent and child elements. Other important AngularJS specifics on my learn list, is to understand how the watchers work in directives and how to write the code to end up with less of them.&lt;/p&gt;
+
+&lt;p&gt;Angular seems a powerful, not big library. But building your first web components will take some time. Is not like you would extend an ExtJS &lt;code&gt;Panel&lt;/code&gt; with some child items or a &lt;code&gt;View&lt;/code&gt; with a configured &lt;code&gt;XTemplate&lt;/code&gt; and some methods.&lt;/p&gt;
+
+&lt;p&gt;Overall when building an app or component you could spent 40% of your time on writing html and 60% javascript, while on ExtJS around 85% is javascript. Also ExtJS has built in nice layouts and a platform for theming, while on AngularJS is needed a 3&amp;#8242;rd-party CSS/JS library or some personal efforts.&lt;/p&gt;
+
+&lt;p&gt;I like Angular&amp;#8217;s two way binding, though I&amp;#8217;m not sure yet when there are a lot of watches, from the performance perspective how the app will behave. Directives are very nice to make reusable components, but I&amp;#8217;ll need some time to get used to Angular&amp;#8217;s way of configuring components(directives) trough html attributes when in ExtJS  I did it trough javascript objects.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div ng-controller=&amp;quot;ExampleCtrl&amp;quot;&amp;gt;
+    &amp;lt;nvd3-cumulative-line-chart
+            data=&amp;quot;exampleData&amp;quot;
+            id=&amp;quot;exampleId&amp;quot;
+            width=&amp;quot;800&amp;quot;
+            height=&amp;quot;400&amp;quot;
+            showXAxis=&amp;quot;true&amp;quot;
+            showYAxis=&amp;quot;true&amp;quot;
+            tooltips=&amp;quot;true&amp;quot;
+            interactive=&amp;quot;true&amp;quot;
+            x=&amp;quot;xFunction()&amp;quot;
+            y=&amp;quot;yFunction()&amp;quot;
+            color=&amp;quot;colorFunction()&amp;quot;
+            isArea=&amp;quot;true&amp;quot;
+            margin=&amp;quot;{left:50,top:50,bottom:50,right:50}&amp;quot;
+            &amp;gt;
+        &amp;lt;svg&amp;gt;&amp;lt;/svg&amp;gt;
+    &amp;lt;/nvd3-cumulative-line-chart&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Next Step&lt;/strong&gt;&lt;br /&gt;
+Climb next peak on that learning curve, with some more patient along with some beers, going to reread some of the resources and build some more directives.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>How to add SVG patterns in your ExtJS 4.2.1 apps</title>
       <link>http://vadimpopa.com/how-to-add-svg-patterns-in-your-extjs-4-2-1-apps/</link>
       <pubDate>Mon, 23 Sep 2013 21:12:06 +0300</pubDate>
